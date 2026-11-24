@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revivo - AI Powered Waste to Value Ecosystem</title>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
+<style>
+:root{--bg:#031230;--card:#08204a;--line:#1d4a94;--pink:#ec407a;--txt:#fff;--mut:#9fb3d6;--ok:#3ddc97}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:Segoe UI,Nirmala UI,system-ui,Arial,sans-serif;line-height:1.5}
+nav{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:12px 6vw;background:#031230ee;backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.logo{font-weight:800;font-size:22px;letter-spacing:1px}.logo b{color:var(--pink)}
+nav a{color:var(--mut);margin-right:20px;text-decoration:none;font-size:15px}nav a:hover{color:#fff}
+select{background:var(--card);color:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:14px}
+section{padding:60px 6vw;max-width:1200px;margin:auto}
+h1{font-size:clamp(32px,5vw,56px);line-height:1.1;margin:0 0 16px}h1 span,h2 span{color:var(--pink)}
+h2{font-size:32px;margin:0 0 8px}.sub{color:var(--mut);max-width:680px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:center;padding-top:70px}
+.tags{display:flex;gap:10px;margin:22px 0;flex-wrap:wrap}.tags i{font-style:normal;border:1px solid var(--pink);color:var(--pink);padding:5px 16px;border-radius:99px;font-weight:600}
+.btn{background:var(--pink);color:#fff;border:0;padding:12px 24px;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;font-family:inherit}
+.btn.o{background:transparent;border:1px solid var(--line)}.btn:hover{filter:brightness(1.1)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.stat,.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.stat b{font-size:34px;color:var(--pink);display:block}.stat span{color:var(--mut);font-size:14px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:30px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 20px;position:relative}
+.step em{font-style:normal;color:var(--pink);font-weight:700}.step h3{margin:6px 0}.step p{color:var(--mut);margin:0;font-size:15px}
+.step:not(:last-child)::after{content:"\2192";position:absolute;right:-18px;top:42%;color:var(--pink);font-size:24px;font-weight:900;z-index:2}
+.ngos{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.ngo{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}.ngo.near{border-color:var(--pink);box-shadow:0 0 0 1px var(--pink)}
+.ngo h4{margin:6px 0 2px;font-size:18px}.ngo small{color:var(--mut);display:block}
+.badge{display:inline-block;font-size:12px;padding:3px 10px;border-radius:99px;background:#12306a;color:var(--mut)}
+.badge.live{background:#0e3b2c;color:var(--ok)}.badge.pk{background:var(--pink);color:#fff}
+.scan{display:grid;grid-template-columns:1fr 1.1fr;gap:26px;margin-top:28px;align-items:start}
+.drop{border:2px dashed var(--line);border-radius:16px;min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:16px;cursor:pointer;overflow:hidden}
+.drop.on{border-color:var(--pink)}.drop img,.drop video,.drop canvas{max-width:100%;max-height:340px;border-radius:12px}
+.row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.bar{height:10px;background:#12306a;border-radius:9px;overflow:hidden;margin:4px 0 10px}.bar div{height:100%;background:var(--pink);width:0;transition:width .6s}
+.res h3{font-size:28px;margin:4px 0}.res small{color:var(--mut)}
+.blk{border-top:1px solid #12306a;margin-top:16px;padding-top:14px}.blk h5{margin:0 0 8px;font-size:16px;color:var(--pink)}
+.pill{display:inline-block;padding:3px 12px;border-radius:99px;font-weight:700;font-size:13px;vertical-align:middle}
+.rec{background:#0e3b2c;color:var(--ok)}.nrec{background:#4a1b2b;color:#ff8aa8}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px}.kv span{color:var(--mut)}
+.res ul{margin:0;padding-left:20px}.res li{margin:3px 0}
+.opts{display:grid;gap:10px}.opt{text-align:left;background:#0a2a5e;border:1px solid var(--line);color:#fff;border-radius:12px;padding:12px 14px;cursor:pointer;font-family:inherit;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--pink)}.opt b{display:block;font-size:16px}.opt span{color:var(--mut);font-size:13px}.opt:disabled{opacity:.55;cursor:default}.opt.sel{border-color:var(--ok);opacity:1}
+.done{background:#0e3b2c;color:var(--ok);padding:10px 14px;border-radius:10px;margin-top:12px;font-size:14px}
+.dash{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:26px}
+.hist{margin-top:22px;max-height:260px;overflow:auto}.hist div{display:flex;justify-content:space-between;gap:12px;padding:9px 4px;border-bottom:1px solid #12306a;font-size:14px}.hist small{color:var(--mut)}
+.cls{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}.cls .card{padding:16px}.cls b{display:block}.cls span{color:var(--mut);font-size:13px}
+footer{text-align:center;color:var(--mut);padding:40px;border-top:1px solid var(--line)}
+.spin{width:34px;height:34px;border:4px solid #12306a;border-top-color:var(--pink);border-radius:50%;animation:s 1s linear infinite}@keyframes s{to{transform:rotate(360deg)}}
+@media(max-width:860px){.hero,.scan{grid-template-columns:1fr}.steps,.dash{grid-template-columns:1fr 1fr}.cls,.ngos{grid-template-columns:1fr}.step::after{display:none}.links{display:none}}
+
+.hid{display:none!important}
+#login{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.lcard{width:100%;max-width:430px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px}
+.lcard h2{font-size:26px}.lcard input,.addr{width:100%;background:#0a2a5e;border:1px solid var(--line);color:#fff;border-radius:10px;padding:11px 12px;font-size:15px;margin:6px 0;font-family:inherit}
+.addr.err{border-color:#ff5c7a}.err-t{color:#ff8aa8;font-size:13px;min-height:18px}
+#sms{position:fixed;top:14px;left:50%;transform:translate(-50%,-160%);z-index:60;background:#fff;color:#111;border-radius:12px;padding:12px 18px;max-width:92vw;box-shadow:0 8px 30px #0008;transition:.4s;cursor:pointer;font-size:14px}#sms.show{transform:translate(-50%,0)}
+.trk{margin-top:16px}.trk .top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.trk small{color:var(--mut)}
+.tl{margin:16px 0 6px}.stp{display:flex;gap:12px;position:relative;padding-bottom:14px}
+.stp i{width:14px;height:14px;border-radius:50%;background:#12306a;border:2px solid var(--line);margin-top:4px;flex:none;z-index:1}
+.stp:not(:last-child)::before{content:"";position:absolute;left:6px;top:18px;bottom:0;width:2px;background:#12306a}
+.stp.dn i{background:var(--ok);border-color:var(--ok)}.stp.dn:not(:last-child)::before{background:var(--ok)}.stp.cu i{box-shadow:0 0 0 4px #3ddc9744}
+.stp b{display:block;font-size:15px}.stp:not(.dn) b{color:var(--mut);font-weight:500}
+.status{background:#0a2a5e;border-left:3px solid var(--pink);padding:10px 12px;border-radius:8px;font-size:14px;margin:8px 0}
+.col,.otpb{background:#0a2a5e;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px}
+.otpn{font-size:28px;letter-spacing:6px;font-weight:800;color:var(--pink)}
+.mini{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}.mini input{max-width:160px;margin:0}
+.btn.s{padding:8px 14px;font-size:14px}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--pink);color:#fff;font-weight:800;font-size:18px;border:2px solid #ffffff44;cursor:pointer;margin-right:10px;font-family:inherit}
+.avatar.big{width:58px;height:58px;font-size:26px;margin:0;flex:none;display:flex;align-items:center;justify-content:center;cursor:default}
+.pp{position:fixed;top:64px;right:4vw;width:350px;max-width:92vw;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;z-index:20;box-shadow:0 12px 40px #000a;max-height:85vh;overflow:auto}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.pgrid div{background:#0a2a5e;border-radius:12px;padding:10px 12px}.pgrid b{font-size:22px;color:var(--pink);display:block}.pgrid span{font-size:12px;color:var(--mut)}
+.lb{margin-top:22px;padding:6px 0}.lbr{display:grid;grid-template-columns:50px 1fr 70px 90px 90px;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid #12306a}
+.lbr.hd{color:var(--mut);font-size:13px}.lbr.me{background:#0e2a5a;border-left:3px solid var(--pink)}.lbr .nm{display:flex;gap:10px;align-items:center}
+.lbr .mav{width:34px;height:34px;border-radius:50%;background:#12306a;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}.lbr.me .mav{background:var(--pink)}
+.lbr .pt{font-weight:800;color:var(--pink);text-align:right}.lbr .rk{font-size:20px;text-align:center}
+@media(max-width:860px){.lbr{grid-template-columns:40px 1fr 80px}.lbr .hm{display:none}}
+</style>
+</head>
+<body>
+<div id="sms"></div>
+<div id="login"><div class="lcard">
+ <div class="logo" style="margin-bottom:10px">REVIV<b>O</b></div>
+ <select class="langsel" style="float:right"><option value="en">English</option><option value="hi">हिन्दी</option></select>
+ <h2 data-i18n="l_title"></h2><p class="sub" data-i18n="l_sub"></p>
+ <input id="lname" data-ph="l_name" autocomplete="name"><input id="lemail" type="email" data-ph="l_email" autocomplete="email"><input id="lphone" data-ph="l_phone" inputmode="numeric" maxlength="10" autocomplete="tel">
+ <button class="btn" id="sendOtp" style="width:100%;margin-top:6px" data-i18n="l_send"></button>
+ <div id="step2" class="hid"><input id="lotp" data-ph="l_otp" inputmode="numeric" maxlength="6">
+ <button class="btn" id="verifyOtp" style="width:100%;margin-top:6px" data-i18n="l_verify"></button>
+ <button class="btn o s" id="resend" style="margin-top:8px" data-i18n="l_resend"></button></div>
+ <div class="err-t" id="lerr"></div><small style="color:var(--mut)" data-i18n="l_demo"></small>
+</div></div>
+<nav><div class="logo">REVIV<b>O</b></div>
+<div style="display:flex;align-items:center"><span class="links"><a href="#ngos" data-i18n="nav_ngo"></a><a href="#scan" data-i18n="nav_scan"></a><a href="#track" data-i18n="nav_track"></a><a href="#leaderboard" data-i18n="nav_lb"></a><a href="#workflow" data-i18n="nav_flow"></a><a href="#impact" data-i18n="nav_impact"></a></span>
+<button id="avatar" class="avatar hid" aria-label="Profile"></button><select class="langsel"><option value="en">English</option><option value="hi">हिन्दी</option></select></div></nav>
+<div id="pp" class="pp hid"></div>
+
+<section class="hero">
+  <div>
+    <h1>Revivo<br><span>AI Powered Waste to Value Ecosystem</span></h1>
+    <p class="sub" data-i18n="h_sub"></p>
+    <div class="tags"><i data-i18n="t_id"></i><i data-i18n="t_rec"></i><i data-i18n="t_rew"></i></div>
+    <a class="btn" href="#scan" data-i18n="b_start"></a> <a class="btn o" href="#workflow" data-i18n="b_how"></a>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>9</b><span data-i18n="s_cats"></span></div>
+    <div class="stat"><b id="sItems">0</b><span data-i18n="s_items"></span></div>
+    <div class="stat"><b id="sPts">0</b><span data-i18n="s_pts"></span></div>
+    <div class="stat"><b id="sCo2">0</b><span data-i18n="s_co2"></span></div>
+  </div>
+</section>
+
+<section id="ngos">
+  <h2 data-i18n="n_title"></h2>
+  <p class="sub" data-i18n="n_sub"></p>
+  <div class="row"><button class="btn" id="loc" data-i18n="n_loc"></button><span id="locNote" class="sub" style="align-self:center"></span></div>
+  <div class="ngos" id="ngoList"></div>
+</section>
+
+<section id="workflow">
+  <h2 data-i18n="w_title"></h2>
+  <p class="sub" data-i18n="w_flow"></p>
+  <div class="steps">
+    <div class="step"><em>01</em><h3 data-i18n="w1t"></h3><p data-i18n="w1d"></p></div>
+    <div class="step"><em>02</em><h3 data-i18n="w2t"></h3><p data-i18n="w2d"></p></div>
+    <div class="step"><em>03</em><h3 data-i18n="w3t"></h3><p data-i18n="w3d"></p></div>
+    <div class="step"><em>04</em><h3 data-i18n="w4t"></h3><p data-i18n="w4d"></p></div>
+  </div>
+</section>
+
+<section id="scan">
+  <h2 data-i18n="sc_title"></h2>
+  <p class="sub"><span data-i18n="sc_model"></span> <span id="mode" class="badge"></span></p>
+  <div class="scan">
+    <div>
+      <div class="drop" id="drop"><div><div style="font-size:44px">&#128247;</div><b data-i18n="d_text"></b><br><span class="sub" data-i18n="d_sub"></span></div></div>
+      <input type="file" id="file" accept="image/*" hidden>
+      <div class="row">
+        <button class="btn o" id="up" data-i18n="b_up"></button>
+        <button class="btn o" id="cam" data-i18n="b_cam"></button>
+        <button class="btn" id="go" disabled data-i18n="b_go"></button>
+      </div>
+    </div>
+    <div class="card res" id="res"><div class="sub" data-i18n="r_hint"></div></div>
+  </div>
+</section>
+
+<section id="track">
+  <h2 data-i18n="tk_title"></h2><p class="sub" data-i18n="tk_sub"></p>
+  <div id="trackList"></div>
+</section>
+
+<section id="leaderboard">
+  <h2 data-i18n="lb_title"></h2><p class="sub" data-i18n="lb_sub"></p>
+  <div class="card lb" id="lbList"></div>
+  <p class="sub" style="font-size:13px" data-i18n="lb_note"></p>
+</section>
+
+<section id="impact">
+  <h2 data-i18n="i_title"></h2>
+  <p class="sub" data-i18n="i_sub"></p>
+  <div class="dash">
+    <div class="stat"><b id="dItems">0</b><span data-i18n="i_items"></span></div>
+    <div class="stat"><b id="dPts">0</b><span data-i18n="i_pts"></span></div>
+    <div class="stat"><b id="dCo2">0</b><span data-i18n="i_co2"></span></div>
+    <div class="stat"><b id="dRec">0%</b><span data-i18n="i_rec"></span></div>
+  </div>
+  <div class="card hist" id="hist"></div>
+  <div class="row"><button class="btn o" id="reset" data-i18n="i_reset"></button></div>
+</section>
+
+<section id="classes">
+  <h2 data-i18n="k_title"></h2>
+  <div class="cls" id="cls"></div>
+</section>
+<footer><b>Revivo</b> - AI Powered Waste to Value Ecosystem &middot; <span data-i18n="foot"></span></footer>
+
+<script>
+/* ================= PARTNER NGOs (EDIT THIS LIST WITH YOUR REAL PARTNERS AND REAL COLLECTORS (col = name, phone, vehicle). ph is intentionally EMPTY: with no number set, Call/WhatsApp buttons are disabled (demo-safe). Put a number ONLY if you own it or have permission.) =================
+   days: 0=Sun ... 6=Sat | h: pickup window [startHour, endHour] | lat/lng: NGO location */
+const NGOS=[
+ {n:"Green Earth Foundation",area:"Meerut Cantt",lat:28.9890,lng:77.7600,days:[1,3,5],h:[10,12],col:{n:"Ramesh Kumar",ph:"",veh:"UP 15 AB 1001"}},
+ {n:"Swachh Sankalp Trust",area:"Modipuram, Meerut",lat:29.0700,lng:77.7000,days:[2,4,6],h:[9,11],col:{n:"Sunil Sharma",ph:"",veh:"UP 15 CD 2002"}},
+ {n:"Punarnava Welfare Society",area:"Shastri Nagar, Meerut",lat:28.9760,lng:77.6850,days:[1,2,4],h:[14,16],col:{n:"Anita Verma",ph:"",veh:"UP 15 EF 3003"}},
+ {n:"EcoSaathi NGO",area:"Ghaziabad",lat:28.6692,lng:77.4538,days:[3,5,6],h:[11,13],col:{n:"Mohit Tyagi",ph:"",veh:"UP 14 GH 4004"}},
+ {n:"Dharti Mitra Samiti",area:"Delhi NCR",lat:28.6139,lng:77.2090,days:[0,2,5],h:[10,12],col:{n:"Imran Khan",ph:"",veh:"DL 1C 5005"}}
+];
+const LOC={en:"en-IN",hi:"hi-IN"};
+
+/* ================= TRANSLATIONS ================= */
+const L={
+en:{ph_demo:"+91 XXXXX XXXXX (demo)",demo_call:"Demo mode: no real contact number is configured, so calling and WhatsApp are disabled. In the live system this opens the collector's real contact.",l_email:"Email address",nav_lb:"Leaderboard",lb_title:"Eco <span>Leaderboard</span>",lb_sub:"Every verified pickup earns reward points, whether you donate or buy recycled products. Climb the ranks and lead the green movement!",
+lb_note:"Participants marked demo are sample entries for the prototype. Real users who log in on this device appear automatically.",lb_player:"Player",lb_items:"Recovered",lb_co2:"CO₂ (kg)",lb_pts:"Points",lb_you:"You",lb_demo:"demo",
+lb_up:"🚀 Only {n} more points to overtake {name}!",lb_top:"🏆 You are #1 on the leaderboard! Keep it up!",lb_zero:"Complete your first OTP-verified pickup to start climbing the leaderboard.",
+pf_phone:"Phone",pf_scanned:"Items scanned",pf_rec:"Items recovered",pf_pts:"Reward points",pf_co2:"CO₂ avoided (kg)",pf_lvl:"Level",pf_next:"{n} more points to reach {lvl}",pf_max:"Top level reached!",pf_rank:"Leaderboard rank",pf_tree:"≈ {n} trees' yearly CO₂ absorption (estimate)",
+pf_msg0:"Welcome! Scan your first waste item and start your green journey 🌱",pf_msgp:"Great start, {name}! Complete your pickup handover to earn your first points.",pf_msg1:"Fantastic work, {name}! You helped recover {n} items and kept {co2} kg of CO₂ out of the air. The planet thanks you! 🌍",
+lv0:"Eco Seedling",lv1:"Green Sprout",lv2:"Eco Hero",lv3:"Planet Guardian",
+earn_note:"You earn {n} reward points either way, once the pickup is OTP-verified.",c_earn:"You will earn {n} reward points after the OTP-verified handover.",
+l_title:"Login to Revivo",l_sub:"Sign in with your mobile number to scan waste, book pickups and track them.",l_name:"Your name",l_phone:"Mobile number (10 digits)",l_send:"Send OTP",l_otp:"Enter 6-digit OTP",l_verify:"Verify & Login",l_resend:"Resend OTP",l_bad:"Enter your name, a valid email and a valid 10-digit mobile number.",l_wrong:"Wrong OTP. Please try again.",l_demo:"Demo mode: no real SMS is sent. Your OTP appears in the banner at the top of the screen.",l_out:"Logout",l_hi:"Hi, {name}",
+sms_login:"<b>Revivo:</b> Your login OTP is <b>{otp}</b>. Do not share it.",sms_pick:"<b>Revivo:</b> Your collector is on the way. Pickup OTP: <b>{otp}</b>. Share it only at handover.",
+a_label:"Pickup address",a_ph:"House no., street, area, landmark, city, PIN",a_need:"Please enter your full pickup address before choosing an option.",
+nav_track:"Track Pickups",tk_title:"Track My <span>Pickups</span>",tk_sub:"Follow every pickup live like a delivery order: booking, collector, arrival and OTP-verified handover.",
+tk_none:"No pickups yet. Scan a waste item and choose an option to book one.",tk_demo:"Demo: simulate next update",tk_demo_n:"In the live system, status updates come from the NGO collector app.",
+st0:"Pickup booked",st1:"Collector assigned",st2:"Out for pickup",st3:"Arriving soon",st4:"Collected & verified",
+tk0:"Pickup scheduled for {date}, {time}.",tk1:"{col} from {ngo} is assigned to your pickup.",tk2:"{col} has left {ngo}. Estimated arrival: {eta}.",tk3:"{col} is nearby and will arrive in about {m} minutes. Keep your OTP ready.",tk4:"Waste collected and handover verified.",
+col_title:"Your collector",col_name:"Name",col_veh:"Vehicle",col_ph:"Phone",b_call:"📞 Call",b_wa:"💬 Send address on WhatsApp",wa_msg:"Hello, I am {name}. My pickup address: {addr}",
+otp_title:"Your pickup OTP",otp_note:"Share this OTP with the collector only when they arrive to collect the waste.",otp_demo:"Demo: collector enters OTP",otp_btn:"Verify handover",otp_ok:"Handover verified!",
+scanned:"Scanned",pickup_on:"Pickup",addr_l:"Address",id_l:"Order",pend:"OTP pending",c_track:"Track this pickup →",
+d_red:"{n} reward points credited to your account.",d_don:"Donation received by {ngo}. Thank you!",d_buy:"Waste collected. Thank you!",
+nav_ngo:"NGO Partners",nav_scan:"Scan",nav_flow:"Workflow",nav_impact:"Impact",
+h_sub:"Turning waste into value through AI-powered recovery. Snap a photo to get the waste category, a pickup slot from your nearest partner NGO, what it can be turned into, and rewards for every item recovered.",
+t_id:"Identify",t_rec:"Recover",t_rew:"Reward",b_start:"Start Scanning",b_how:"How it works",
+s_cats:"waste categories recognised",s_items:"items recovered",s_pts:"reward points",s_co2:"kg CO₂ saved (est.)",
+n_title:"Our <span>NGO Partners</span>",n_sub:"We have partnered with NGOs that collect, recycle and upcycle waste. Share your location to find the one nearest to you.",
+n_loc:"📍 Find nearest NGO",n_locing:"Detecting location...",n_deny:"Location not shared - distances shown from Meerut centre.",n_ok:"Using your current location.",n_def:"Showing distances from Meerut centre.",
+n_near:"Nearest to you",n_km:"km away",n_days:"Pickup days",n_time:"Time",
+w_title:"Solution <span>Workflow</span>",w_flow:"AI-Powered Flow: Waste Input → AI Identification → Recovery Mapping → Collection & Recycling → Rewards & Impact",
+w1t:"Identify Waste",w1d:"AI identifies waste categories through image-based classification and smart segregation.",
+w2t:"Map Recovery",w2d:"Waste is matched with suitable recovery pathways, collection needs and recycling partners.",
+w3t:"Collect & Recover",w3d:"Waste is routed for collection, recycling, reuse or upcycling through connected recovery systems.",
+w4t:"Reward & Track",w4d:"Users receive participation incentives while recovery activities and environmental impact are tracked.",
+sc_title:"AI Waste <span>Scanner</span>",sc_model:"Model status:",
+m_load:"loading...",m_custom:"Custom model trained on waste dataset",m_demo:"Demo mode (generic model) - trained model/ folder not found",m_fail:"Model failed to load",m_nolib:"AI libraries failed to load - check internet and reload",
+d_text:"Drop an image here or click to upload",d_sub:"JPG / PNG of a single waste item works best",
+b_up:"Upload Image",b_cam:"Use Camera",b_cap:"Capture Photo",b_go:"Analyse Waste",
+r_hint:"Your AI report will appear here after you scan an item.",r_busy:"Analysing waste...",r_err:"Could not analyse: ",
+r1:"1. Waste category",r_conf:"Confidence",r_recov:"Recoverable",r_resid:"Residual",r_route:"Recovery route",
+r2:"2. Pickup schedule",r_ngo:"Partner NGO",r_dist:"Distance",r_date:"Pickup date",r_slot:"Pickup time",r_note:"Our partner NGO will collect this waste from your location.",
+r3:"3. What can be made from this waste",r4:"4. What would you like to do?",
+o_buy:"Buy recycled product",o_buy_d:"Shop products made from this kind of waste. Reward points included.",
+o_don:"Donate",o_don_d:"Donate this waste to our partner NGO for community recovery. Reward points included.",
+o_red:"Redeem points",o_red_d:"Collect {n} reward points after the OTP-verified pickup.",
+c_buy:"Great choice! Recycled products you can buy:",c_don:"Thank you! Your donation pickup is booked with {ngo}.",c_red:"Pickup booked! {n} points will be credited after OTP-verified handover.",c_pick:"Pickup confirmed: {date}, {time}.",
+i_title:"Reward & <span>Impact Tracker</span>",i_sub:"Every scan, pickup and choice is recorded here. Points and impact count after the OTP-verified handover.",
+i_items:"Items scanned",i_pts:"Reward points",i_co2:"kg CO₂ avoided",i_rec:"Recyclable share",i_none:"No scans yet.",i_reset:"Reset tracker",
+k_title:"Recognised <span>Categories</span>",foot:"Identify | Recover | Reward"},
+hi:{ph_demo:"+91 XXXXX XXXXX (डेमो)",demo_call:"डेमो मोड: कोई असली संपर्क नंबर सेट नहीं है, इसलिए कॉल और WhatsApp बंद हैं। असली सिस्टम में यह कलेक्टर का असली संपर्क खोलेगा।",l_email:"ईमेल पता",nav_lb:"लीडरबोर्ड",lb_title:"इको <span>लीडरबोर्ड</span>",lb_sub:"हर वेरिफ़ाइड पिकअप पर रिवॉर्ड पॉइंट्स मिलते हैं, चाहे आप दान करें या रीसाइकल्ड प्रोडक्ट खरीदें। रैंक चढ़ें और हरित अभियान में आगे रहें!",
+lb_note:"डेमो लिखे प्रतिभागी प्रोटोटाइप के नमूना एंट्री हैं। इस डिवाइस पर लॉगिन करने वाले असली यूज़र अपने आप दिखते हैं।",lb_player:"खिलाड़ी",lb_items:"रिकवर",lb_co2:"CO₂ (किग्रा)",lb_pts:"पॉइंट्स",lb_you:"आप",lb_demo:"डेमो",
+lb_up:"🚀 {name} से आगे निकलने के लिए बस {n} पॉइंट्स और!",lb_top:"🏆 आप लीडरबोर्ड पर #1 हैं! ऐसे ही जारी रखें!",lb_zero:"लीडरबोर्ड पर चढ़ना शुरू करने के लिए अपना पहला OTP-वेरिफ़ाइड पिकअप पूरा करें।",
+pf_phone:"फ़ोन",pf_scanned:"स्कैन की गई वस्तुएँ",pf_rec:"रिकवर की गई वस्तुएँ",pf_pts:"रिवॉर्ड पॉइंट्स",pf_co2:"CO₂ बचाई (किग्रा)",pf_lvl:"लेवल",pf_next:"{lvl} तक पहुँचने के लिए {n} पॉइंट्स और",pf_max:"सबसे ऊँचे लेवल पर पहुँच गए!",pf_rank:"लीडरबोर्ड रैंक",pf_tree:"≈ {n} पेड़ों के सालाना CO₂ अवशोषण के बराबर (अनुमान)",
+pf_msg0:"स्वागत है! अपना पहला कचरा स्कैन करें और हरित सफ़र शुरू करें 🌱",pf_msgp:"शानदार शुरुआत, {name}! अपना पहला पॉइंट पाने के लिए पिकअप हैंडओवर पूरा करें।",pf_msg1:"बेहतरीन काम, {name}! आपने {n} वस्तुएँ रिकवर कराईं और {co2} किग्रा CO₂ हवा में जाने से रोकी। धरती आपका शुक्रिया करती है! 🌍",
+lv0:"इको अंकुर",lv1:"हरा पौधा",lv2:"इको हीरो",lv3:"धरती रक्षक",
+earn_note:"OTP-वेरिफ़ाइड पिकअप के बाद, आप जो भी चुनें, आपको {n} रिवॉर्ड पॉइंट्स मिलेंगे।",c_earn:"OTP-वेरिफ़ाइड हैंडओवर के बाद आपको {n} रिवॉर्ड पॉइंट्स मिलेंगे।",
+l_title:"Revivo में लॉगिन करें",l_sub:"कचरा स्कैन करने, पिकअप बुक करने और ट्रैक करने के लिए अपने मोबाइल नंबर से साइन इन करें।",l_name:"आपका नाम",l_phone:"मोबाइल नंबर (10 अंक)",l_send:"OTP भेजें",l_otp:"6 अंकों का OTP डालें",l_verify:"वेरिफ़ाई करें और लॉगिन करें",l_resend:"OTP दोबारा भेजें",l_bad:"अपना नाम, सही ईमेल और सही 10 अंकों का मोबाइल नंबर डालें।",l_wrong:"गलत OTP। कृपया दोबारा कोशिश करें।",l_demo:"डेमो मोड: कोई असली SMS नहीं भेजा जाता। आपका OTP स्क्रीन के ऊपर बैनर में दिखेगा।",l_out:"लॉगआउट",l_hi:"नमस्ते, {name}",
+sms_login:"<b>Revivo:</b> आपका लॉगिन OTP <b>{otp}</b> है। इसे किसी से साझा न करें।",sms_pick:"<b>Revivo:</b> आपका कलेक्टर रास्ते में है। पिकअप OTP: <b>{otp}</b>। इसे केवल कचरा सौंपते समय बताएँ।",
+a_label:"पिकअप का पता",a_ph:"मकान नंबर, गली, इलाका, लैंडमार्क, शहर, पिन कोड",a_need:"कोई विकल्प चुनने से पहले कृपया अपना पूरा पिकअप पता डालें।",
+nav_track:"पिकअप ट्रैक करें",tk_title:"मेरे <span>पिकअप ट्रैक करें</span>",tk_sub:"हर पिकअप को डिलीवरी ऑर्डर की तरह लाइव ट्रैक करें: बुकिंग, कलेक्टर, पहुँचना और OTP से वेरिफ़ाइड हैंडओवर।",
+tk_none:"अभी कोई पिकअप नहीं। कचरा स्कैन करें और पिकअप बुक करने के लिए कोई विकल्प चुनें।",tk_demo:"डेमो: अगला अपडेट सिमुलेट करें",tk_demo_n:"असली सिस्टम में स्टेटस अपडेट NGO के कलेक्टर ऐप से आते हैं।",
+st0:"पिकअप बुक हुआ",st1:"कलेक्टर नियुक्त हुआ",st2:"पिकअप के लिए निकल चुका है",st3:"जल्द पहुँच रहा है",st4:"कलेक्ट और वेरिफ़ाइड",
+tk0:"पिकअप {date}, {time} के लिए निर्धारित है।",tk1:"{ngo} के {col} आपके पिकअप के लिए नियुक्त हुए हैं।",tk2:"{col} {ngo} से निकल चुके हैं। अनुमानित पहुँचने का समय: {eta}।",tk3:"{col} पास में हैं और लगभग {m} मिनट में पहुँचेंगे। अपना OTP तैयार रखें।",tk4:"कचरा कलेक्ट हो गया और हैंडओवर वेरिफ़ाई हो गया।",
+col_title:"आपका कलेक्टर",col_name:"नाम",col_veh:"गाड़ी",col_ph:"फ़ोन",b_call:"📞 कॉल करें",b_wa:"💬 WhatsApp पर पता भेजें",wa_msg:"नमस्ते, मैं {name} हूँ। मेरे पिकअप का पता: {addr}",
+otp_title:"आपका पिकअप OTP",otp_note:"यह OTP कलेक्टर को तभी बताएँ जब वह कचरा लेने पहुँच जाए।",otp_demo:"डेमो: कलेक्टर OTP डालता है",otp_btn:"हैंडओवर वेरिफ़ाई करें",otp_ok:"हैंडओवर वेरिफ़ाइड!",
+scanned:"स्कैन",pickup_on:"पिकअप",addr_l:"पता",id_l:"ऑर्डर",pend:"OTP बाकी",c_track:"इस पिकअप को ट्रैक करें →",
+d_red:"{n} रिवॉर्ड पॉइंट्स आपके खाते में जुड़ गए।",d_don:"{ngo} को दान प्राप्त हो गया। धन्यवाद!",d_buy:"कचरा कलेक्ट हो गया। धन्यवाद!",
+nav_ngo:"NGO पार्टनर",nav_scan:"स्कैन",nav_flow:"वर्कफ़्लो",nav_impact:"प्रभाव",
+h_sub:"AI-संचालित रिकवरी से कचरे को मूल्य में बदलना। फ़ोटो खींचिए और पाइए कचरे की श्रेणी, आपके नज़दीकी पार्टनर NGO का पिकअप समय, उससे क्या बन सकता है, और हर रिकवरी पर रिवॉर्ड।",
+t_id:"पहचानें",t_rec:"रिकवर करें",t_rew:"रिवॉर्ड पाएँ",b_start:"स्कैन शुरू करें",b_how:"यह कैसे काम करता है",
+s_cats:"कचरा श्रेणियाँ पहचानी जाती हैं",s_items:"वस्तुएँ रिकवर हुईं",s_pts:"रिवॉर्ड पॉइंट्स",s_co2:"किग्रा CO₂ बचत (अनुमानित)",
+n_title:"हमारे <span>NGO पार्टनर</span>",n_sub:"हमने ऐसे NGO से साझेदारी की है जो कचरा इकट्ठा, रीसाइकल और अपसाइकल करते हैं। अपने सबसे नज़दीकी NGO को जानने के लिए अपनी लोकेशन साझा करें।",
+n_loc:"📍 नज़दीकी NGO खोजें",n_locing:"लोकेशन पता की जा रही है...",n_deny:"लोकेशन साझा नहीं की गई - दूरी मेरठ केंद्र से दिखाई जा रही है।",n_ok:"आपकी वर्तमान लोकेशन का उपयोग हो रहा है।",n_def:"दूरी मेरठ केंद्र से दिखाई जा रही है।",
+n_near:"आपके सबसे नज़दीक",n_km:"किमी दूर",n_days:"पिकअप के दिन",n_time:"समय",
+w_title:"समाधान <span>वर्कफ़्लो</span>",w_flow:"AI-संचालित प्रवाह: कचरा इनपुट → AI पहचान → रिकवरी मैपिंग → संग्रह और रीसाइक्लिंग → रिवॉर्ड और प्रभाव",
+w1t:"कचरे की पहचान",w1d:"AI इमेज-आधारित वर्गीकरण और स्मार्ट छंटाई से कचरे की श्रेणी पहचानता है।",
+w2t:"रिकवरी मैपिंग",w2d:"कचरे को उपयुक्त रिकवरी मार्ग, संग्रह ज़रूरतों और रीसाइक्लिंग पार्टनर से जोड़ा जाता है।",
+w3t:"संग्रह और रिकवरी",w3d:"जुड़े हुए रिकवरी सिस्टम के ज़रिए कचरा संग्रह, रीसाइक्लिंग, पुन: उपयोग या अपसाइकल के लिए भेजा जाता है।",
+w4t:"रिवॉर्ड और ट्रैकिंग",w4d:"यूज़र को भागीदारी के लिए प्रोत्साहन मिलता है और रिकवरी व पर्यावरणीय प्रभाव ट्रैक होता है।",
+sc_title:"AI कचरा <span>स्कैनर</span>",sc_model:"मॉडल स्थिति:",
+m_load:"लोड हो रहा है...",m_custom:"कचरा डेटासेट पर प्रशिक्षित कस्टम मॉडल",m_demo:"डेमो मोड (सामान्य मॉडल) - प्रशिक्षित model/ फ़ोल्डर नहीं मिला",m_fail:"मॉडल लोड नहीं हो सका",m_nolib:"AI लाइब्रेरी लोड नहीं हुईं - इंटरनेट जाँचें और रीलोड करें",
+d_text:"यहाँ इमेज डालें या अपलोड करने के लिए क्लिक करें",d_sub:"किसी एक कचरे की JPG / PNG फ़ोटो सबसे अच्छी रहती है",
+b_up:"इमेज अपलोड करें",b_cam:"कैमरा इस्तेमाल करें",b_cap:"फ़ोटो लें",b_go:"कचरा एनालाइज़ करें",
+r_hint:"वस्तु स्कैन करने के बाद आपकी AI रिपोर्ट यहाँ दिखेगी।",r_busy:"कचरे का विश्लेषण हो रहा है...",r_err:"विश्लेषण नहीं हो सका: ",
+r1:"1. कचरे की श्रेणी",r_conf:"विश्वसनीयता",r_recov:"रिकवर योग्य",r_resid:"अवशिष्ट",r_route:"रिकवरी मार्ग",
+r2:"2. पिकअप शेड्यूल",r_ngo:"पार्टनर NGO",r_dist:"दूरी",r_date:"पिकअप की तारीख",r_slot:"पिकअप का समय",r_note:"हमारा पार्टनर NGO यह कचरा आपकी लोकेशन से इकट्ठा करेगा।",
+r3:"3. इस कचरे से क्या बनाया जा सकता है",r4:"4. आप क्या करना चाहेंगे?",
+o_buy:"रीसाइकल्ड प्रोडक्ट खरीदें",o_buy_d:"इस तरह के कचरे से बने प्रोडक्ट खरीदें। रिवॉर्ड पॉइंट्स शामिल।",
+o_don:"दान करें",o_don_d:"समुदाय में रिकवरी के लिए यह कचरा हमारे पार्टनर NGO को दान करें। रिवॉर्ड पॉइंट्स शामिल।",
+o_red:"पॉइंट्स रिडीम करें",o_red_d:"OTP-वेरिफ़ाइड पिकअप के बाद {n} रिवॉर्ड पॉइंट्स पाएँ।",
+c_buy:"बढ़िया चुनाव! आप ये रीसाइकल्ड प्रोडक्ट खरीद सकते हैं:",c_don:"धन्यवाद! आपका दान पिकअप {ngo} के साथ बुक हो गया है।",c_red:"पिकअप बुक हो गया! OTP से हैंडओवर वेरिफ़ाई होने के बाद {n} पॉइंट्स जुड़ेंगे।",c_pick:"पिकअप कन्फ़र्म: {date}, {time}।",
+i_title:"रिवॉर्ड और <span>इम्पैक्ट ट्रैकर</span>",i_sub:"हर स्कैन, पिकअप और आपकी पसंद यहाँ दर्ज होती है। पॉइंट्स और प्रभाव OTP-वेरिफ़ाइड हैंडओवर के बाद गिने जाते हैं।",
+i_items:"स्कैन की गई वस्तुएँ",i_pts:"रिवॉर्ड पॉइंट्स",i_co2:"किग्रा CO₂ बचा",i_rec:"रीसाइकल योग्य हिस्सा",i_none:"अभी तक कोई स्कैन नहीं।",i_reset:"ट्रैकर रीसेट करें",
+k_title:"पहचानी जाने वाली <span>श्रेणियाँ</span>",foot:"पहचानें | रिकवर करें | रिवॉर्ड पाएँ"}
+};
+
+/* ================= WASTE CATEGORY DATA ================= */
+const C={
+"Cardboard":{rec:1,pts:10,co2:0.9,
+ en:{n:"Cardboard",path:"Flatten and send to paper-mill recycling",ideas:["Storage boxes and desk organisers","Craft and school-project material","Recycled packaging board"],prod:["Recycled cardboard organiser","Cardboard planters"]},
+ hi:{n:"कार्डबोर्ड",path:"चपटा करके पेपर मिल रीसाइक्लिंग में भेजें",ideas:["स्टोरेज बॉक्स और डेस्क ऑर्गनाइज़र","क्राफ्ट और स्कूल प्रोजेक्ट की सामग्री","रीसाइकल्ड पैकेजिंग बोर्ड"],prod:["रीसाइकल्ड कार्डबोर्ड ऑर्गनाइज़र","कार्डबोर्ड गमले"]}},
+"Food Organics":{rec:1,pts:8,co2:0.5,
+ en:{n:"Food Organics",path:"Compost or biogas digestion",ideas:["Organic compost for gardens","Biogas for cooking fuel","Bio-enzyme cleaner"],prod:["Organic compost pack","Bio-enzyme floor cleaner"]},
+ hi:{n:"खाद्य जैविक कचरा",path:"कम्पोस्ट या बायोगैस बनाना",ideas:["बगीचे के लिए जैविक खाद","खाना पकाने के लिए बायोगैस","बायो-एंज़ाइम क्लीनर"],prod:["जैविक खाद का पैक","बायो-एंज़ाइम फ़र्श क्लीनर"]}},
+"Glass":{rec:1,pts:12,co2:0.6,
+ en:{n:"Glass",path:"Collect, crush into cullet and remelt",ideas:["New glass bottles and jars","Decorative lamps and vases","Glass tiles and mosaic art"],prod:["Upcycled glass lamp","Recycled glass tumblers"]},
+ hi:{n:"कांच",path:"इकट्ठा करके तोड़कर दोबारा पिघलाना",ideas:["नई कांच की बोतलें और जार","सजावटी लैंप और फूलदान","कांच की टाइलें और मोज़ेक कला"],prod:["अपसाइकल्ड कांच का लैंप","रीसाइकल्ड कांच के गिलास"]}},
+"Metal":{rec:1,pts:15,co2:2.5,
+ en:{n:"Metal",path:"Scrap collection and smelting",ideas:["New metal sheets and utensils","Furniture frames and hardware","Metal art and planters"],prod:["Upcycled metal planter","Recycled metal decor"]},
+ hi:{n:"धातु",path:"कबाड़ इकट्ठा कर गलाकर नया बनाना",ideas:["नई धातु की चादरें और बर्तन","फ़र्नीचर के फ्रेम और हार्डवेयर","धातु कला और गमले"],prod:["अपसाइकल्ड धातु का गमला","रीसाइकल्ड धातु सजावट"]}},
+"Miscellaneous Trash":{rec:0,pts:3,co2:0.1,
+ en:{n:"Miscellaneous Trash",path:"Residual waste sorted at a material recovery facility",ideas:["Refuse-derived fuel (RDF) for cement plants","Separable parts recovered for recycling","Filler material for road construction"],prod:["Eco-brick (waste-filled)","Recycled filler blocks"]},
+ hi:{n:"मिश्रित कचरा",path:"मटीरियल रिकवरी सेंटर पर छंटाई",ideas:["सीमेंट प्लांट के लिए RDF ईंधन","अलग किए जा सकने वाले हिस्सों की रीसाइक्लिंग","सड़क निर्माण में भराव सामग्री"],prod:["इको-ब्रिक (कचरे से भरी ईंट)","रीसाइकल्ड फिलर ब्लॉक"]}},
+"Paper":{rec:1,pts:8,co2:0.8,
+ en:{n:"Paper",path:"Pulp recycling into new paper",ideas:["Recycled notebooks and stationery","Handmade paper and gift bags","Egg trays and paper packaging"],prod:["Recycled paper notebook","Handmade paper bags"]},
+ hi:{n:"कागज़",path:"गूदा बनाकर नया कागज़ तैयार करना",ideas:["रीसाइकल्ड नोटबुक और स्टेशनरी","हैंडमेड पेपर और गिफ्ट बैग","अंडे की ट्रे और पेपर पैकेजिंग"],prod:["रीसाइकल्ड पेपर नोटबुक","हैंडमेड पेपर बैग"]}},
+"Plastic":{rec:1,pts:12,co2:1.5,
+ en:{n:"Plastic",path:"Sort by resin type, shred and reprocess",ideas:["Recycled-plastic bags, pots and furniture","Polyester fibre for clothing","Plastic lumber and paving blocks"],prod:["Recycled plastic tote bag","Upcycled plastic planter"]},
+ hi:{n:"प्लास्टिक",path:"प्रकार के अनुसार छांटकर, कतरकर दोबारा बनाना",ideas:["रीसाइकल्ड प्लास्टिक के बैग, गमले और फ़र्नीचर","कपड़ों के लिए पॉलिएस्टर रेशा","प्लास्टिक लकड़ी और पेविंग ब्लॉक"],prod:["रीसाइकल्ड प्लास्टिक टोट बैग","अपसाइकल्ड प्लास्टिक गमला"]}},
+"Textile Trash":{rec:1,pts:10,co2:3.0,
+ en:{n:"Textile Trash",path:"Reuse, donate or upcycle",ideas:["Tote bags and cushion covers","Rugs and doormats from fabric strips","Cleaning cloths and stuffing material"],prod:["Upcycled fabric tote bag","Patchwork rug"]},
+ hi:{n:"कपड़ा कचरा",path:"दोबारा इस्तेमाल, दान या अपसाइकल",ideas:["टोट बैग और कुशन कवर","कपड़े की पट्टियों से गलीचे और पायदान","सफ़ाई के कपड़े और भराव सामग्री"],prod:["अपसाइकल्ड कपड़े का टोट बैग","पैचवर्क गलीचा"]}},
+"Vegetation":{rec:1,pts:6,co2:0.3,
+ en:{n:"Vegetation",path:"Garden composting or mulching",ideas:["Compost and mulch","Vermicompost for plants","Biochar and garden bio-fuel"],prod:["Vermicompost pack","Garden mulch bag"]},
+ hi:{n:"वनस्पति / बागवानी कचरा",path:"बगीचे में खाद या मल्चिंग",ideas:["खाद और मल्च","पौधों के लिए वर्मीकम्पोस्ट","बायोचार और गार्डन बायो-फ्यूल"],prod:["वर्मीकम्पोस्ट पैक","गार्डन मल्च बैग"]}}
+};
+const KEYS=Object.keys(C);
+
+/* ================= STATE / HELPERS ================= */
+const $=id=>document.getElementById(id);
+let lang="en";try{lang=localStorage.getItem("revivo_lang")||"en"}catch(e){}
+if(!L[lang])lang="en";
+const t=(k,v)=>{let s=(L[lang][k]??L.en[k]??k);if(v)for(const x in v)s=s.split("{"+x+"}").join(v[x]);return s};
+let model=null,mob=null,labels=KEYS,mode="none",modeKey="m_load",stream=null,curEl=null,cur=null;
+let geo={lat:28.9845,lng:77.7064,real:false},locKey="n_def";
+let me=null;try{me=JSON.parse(localStorage.getItem("revivo_session")||"null")}catch(e){}
+let S={b:[],addr:""};
+const dk=()=>"revivo2_"+me.phone;
+function loadS(){try{S=JSON.parse(localStorage.getItem(dk())||"null")||{b:[],addr:""}}catch(e){S={b:[],addr:""}}}
+function saveS(){try{localStorage.setItem(dk(),JSON.stringify(S))}catch(e){}}
+const otp6=()=>String(Math.floor(100000+Math.random()*900000));
+
+const fmtDate=d=>d.toLocaleDateString(LOC[lang],{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+const fmtH=h=>new Date(2000,0,1,h).toLocaleTimeString(LOC[lang],{hour:"numeric",minute:"2-digit"});
+const fmtDT=ms=>new Date(ms).toLocaleString(LOC[lang],{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"});
+const slot=n=>fmtH(n.h[0])+" - "+fmtH(n.h[1]);
+function nextPickup(n){const d=new Date();d.setHours(0,0,0,0);for(let i=1;i<=7;i++){const x=new Date(d);x.setDate(d.getDate()+i);if(n.days.includes(x.getDay()))return x}}
+function km(a,b,c,d){const r=Math.PI/180,x=(c-a)*r,y=(d-b)*r,h=Math.sin(x/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)**2;return 12742*Math.asin(Math.sqrt(h))}
+const withDist=()=>NGOS.map(n=>({...n,d:km(geo.lat,geo.lng,n.lat,n.lng)})).sort((a,b)=>a.d-b.d);
+const dayNames=n=>n.days.map(d=>new Date(2024,0,7+d).toLocaleDateString(LOC[lang],{weekday:"short"})).join(", ");
+
+/* ---- simulated SMS banner ---- */
+let smsT;function sms(m){$("sms").innerHTML="📩 "+m;$("sms").classList.add("show");clearTimeout(smsT);smsT=setTimeout(()=>$("sms").classList.remove("show"),25000)}
+$("sms").onclick=()=>$("sms").classList.remove("show");
+
+/* ---- login (front-end demo: OTP shown in banner; real SMS needs a backend) ---- */
+let lotp=null,pendUser=null;
+function gate(){
+ const ok=!!me;$("login").classList.toggle("hid",ok);$("avatar").classList.toggle("hid",!ok);$("pp").classList.add("hid");
+ document.body.style.overflow=ok?"":"hidden";
+ if(ok){loadS();regUser(me);$("avatar").textContent=(me.name||"?").trim().charAt(0).toUpperCase()}else S={b:[],addr:""};
+}
+function sendOtp(){
+ const n=$("lname").value.trim(),p=$("lphone").value.trim();
+ const em=$("lemail").value.trim();
+ if(n.length<2||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)||!/^[6-9]\d{9}$/.test(p)){$("lerr").textContent=t("l_bad");return}
+ $("lerr").textContent="";lotp=otp6();pendUser={name:n,phone:p,email:em};$("step2").classList.remove("hid");sms(t("sms_login",{otp:lotp}));
+}
+$("sendOtp").onclick=sendOtp;$("resend").onclick=sendOtp;
+$("verifyOtp").onclick=()=>{
+ if(pendUser&&$("lotp").value.trim()===lotp){me=pendUser;regUser(me);try{localStorage.setItem("revivo_session",JSON.stringify(me))}catch(e){}
+  $("sms").classList.remove("show");$("lerr").textContent="";gate();applyLang();window.scrollTo(0,0)}
+ else $("lerr").textContent=t("l_wrong");
+};
+function doLogout(){me=null;cur=null;try{localStorage.removeItem("revivo_session")}catch(e){}$("step2").classList.add("hid");$("lotp").value="";gate();applyLang()}
+
+/* ================= RENDER ================= */
+function applyLang(){
+ document.documentElement.lang=lang;document.querySelectorAll(".langsel").forEach(x=>x.value=lang);
+ document.querySelectorAll("[data-i18n]").forEach(e=>e.innerHTML=t(e.dataset.i18n));
+ document.querySelectorAll("[data-ph]").forEach(e=>e.placeholder=t(e.dataset.ph));
+ $("mode").textContent=t(modeKey);$("locNote").textContent=t(locKey);
+ $("cam").textContent=stream?t("b_cap"):t("b_cam");
+ $("cls").innerHTML=KEYS.map(k=>`<div class="card"><b>${C[k][lang].n}</b><span>${C[k][lang].path}</span></div>`).join("");
+ renderAll();
+}
+function renderAll(){renderNGOs();renderStats();renderResult();renderTrack();renderBoard();renderProfile()}
+function renderNGOs(){
+ $("ngoList").innerHTML=withDist().map((n,i)=>`<div class="ngo ${i==0?"near":""}">${i==0?`<span class="badge pk">${t("n_near")}</span>`:""}
+  <h4>${n.n}</h4><small>${n.area}</small><small>${n.d.toFixed(1)} ${t("n_km")}</small>
+  <small>${t("n_days")}: ${dayNames(n)}</small><small>${t("n_time")}: ${slot(n)}</small></div>`).join("");
+}
+function renderStats(){
+ const B=S.b,n=B.length,done=B.filter(x=>x.stage===4),
+  p=done.reduce((a,x)=>a+x.pts,0),c=done.reduce((a,x)=>a+x.co2,0),r=B.filter(x=>x.rec).length;
+ $("sItems").textContent=done.length;$("dItems").textContent=n;$("sPts").textContent=$("dPts").textContent=p;
+ $("sCo2").textContent=$("dCo2").textContent=c.toFixed(1);$("dRec").textContent=n?Math.round(100*r/n)+"%":"0%";
+ const on={buy:"o_buy",don:"o_don",red:"o_red"};
+ $("hist").innerHTML=n?B.slice().reverse().map(x=>`<div><span><b>${C[x.cls][lang].n}</b> <small>(${x.conf}%)</small><br><small>${t(on[x.opt])} · ${x.ngo} · ${fmtDate(new Date(x.date))}, ${t("st"+x.stage)}</small></span><span>${x.stage===4?"+"+x.pts+" pts":t("pend")}</span></div>`).join(""):`<div style="color:var(--mut)">${t("i_none")}</div>`;
+}
+function renderResult(){
+ if(!cur)return;
+ const I=C[cur.cls],X=I[lang],bk=cur.done?S.b.find(x=>x.id===cur.bid):null;
+ const ng=bk?NGOS.find(n=>n.n===bk.ngo):withDist()[0],dist=bk?bk.dist:ng.d,dt=bk?new Date(bk.date):nextPickup(ng);
+ const sel=o=>cur.done===o?"sel":"",dis=cur.done?"disabled":"";
+ let msg="";
+ if(cur.done){
+  const m={buy:`${t("c_buy")}<ul>${X.prod.map(p=>`<li>${p}</li>`).join("")}</ul>`,don:t("c_don",{ngo:ng.n})};
+  msg=`<div class="done">${m[cur.done]}<br>${t("c_earn",{n:I.pts})}<br>${t("c_pick",{date:fmtDate(dt),time:slot(ng)})}<br><a href="#track" style="color:#fff;font-weight:700">${t("c_track")}</a></div>`;
+ }
+ $("res").innerHTML=`
+ <div class="blk" style="border:0;margin:0;padding:0"><h5>${t("r1")}</h5>
+  <h3>${X.n} <span class="pill ${I.rec?"rec":"nrec"}">${t(I.rec?"r_recov":"r_resid")}</span></h3>
+  <small>${t("r_conf")} ${cur.conf}%</small><div class="bar"><div style="width:${cur.conf}%"></div></div>
+  ${cur.others.map(o=>`<small>${C[o.k][lang].n}: ${o.p}%</small>`).join("<br>")}
+  <div class="kv" style="margin-top:8px"><span>${t("r_route")}</span><div>${X.path}</div></div></div>
+ <div class="blk"><h5>${t("r2")}</h5>
+  <div class="kv"><span>${t("r_ngo")}</span><div><b>${ng.n}</b> (${ng.area})</div>
+  <span>${t("r_dist")}</span><div>${dist.toFixed(1)} ${t("n_km")}</div>
+  <span>${t("r_date")}</span><div>${fmtDate(dt)}</div>
+  <span>${t("r_slot")}</span><div>${slot(ng)}</div></div>
+  <small>${t("r_note")}</small></div>
+ <div class="blk"><h5>${t("r3")}</h5><ul>${X.ideas.map(i=>`<li>${i}</li>`).join("")}</ul></div>
+ <div class="blk"><h5>${t("r4")}</h5>
+  <label style="font-size:14px;color:var(--mut)">${t("a_label")}</label>
+  <textarea id="addr" class="addr ${cur.err?"err":""}" rows="2" placeholder="${t("a_ph")}" ${dis}>${cur.addr||""}</textarea>
+  <div class="err-t">${cur.err?t("a_need"):""}</div><small style="color:var(--ok);display:block;margin-bottom:8px">⭐ ${t("earn_note",{n:I.pts})}</small>
+  <div class="opts">
+  <button class="opt ${sel("buy")}" data-o="buy" ${dis}><b>🛍️ ${t("o_buy")}</b><span>${t("o_buy_d")}</span></button>
+  <button class="opt ${sel("don")}" data-o="don" ${dis}><b>🤝 ${t("o_don")}</b><span>${t("o_don_d")}</span></button></div>${msg}</div>`;
+ const ad=$("addr");if(ad)ad.oninput=()=>{cur.addr=ad.value};
+ document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>choose(b.dataset.o));
+}
+function choose(o){
+ if(!cur||cur.done)return;
+ cur.addr=($("addr")?$("addr").value:cur.addr)||"";
+ if(cur.addr.trim().length<8){cur.err=true;renderResult();return}
+ cur.err=false;
+ const I=C[cur.cls],ng=withDist()[0],dt=nextPickup(ng),now=Date.now();
+ const b={id:"RVV"+String(now).slice(-6),cls:cur.cls,conf:cur.conf,opt:o,ngo:ng.n,dist:ng.d,created:now,date:dt.getTime(),addr:cur.addr.trim(),stage:0,times:[now],otp:otp6(),pts:I.pts,co2:I.co2,rec:I.rec};
+ S.b.push(b);S.addr=b.addr;saveS();cur.done=o;cur.bid=b.id;renderAll();
+}
+function renderTrack(){
+ const el=$("trackList");
+ if(!S.b.length){el.innerHTML=`<div class="card sub">${t("tk_none")}</div>`;return}
+ const bs=S.b.slice().sort((a,b)=>(a.stage===4)-(b.stage===4)||b.created-a.created);
+ el.innerHTML=bs.map(b=>{
+  const ng=NGOS.find(n=>n.n===b.ngo)||NGOS[0],c=ng.col,dt=new Date(b.date),X=C[b.cls][lang];
+  const eta=new Date(dt);eta.setHours(ng.h[0],Math.round(b.dist*3),0,0);
+  const v={date:fmtDate(dt),time:slot(ng),col:c.n,ngo:ng.n,eta:eta.toLocaleTimeString(LOC[lang],{hour:"numeric",minute:"2-digit"}),m:10};
+  let line=t("tk"+b.stage,v);
+  if(b.stage===4)line+=" "+(b.opt==="don"?t("d_don",{ngo:ng.n}):t("d_buy"))+" "+t("d_red",{n:b.pts});
+  const steps=[0,1,2,3,4].map(i=>`<div class="stp ${i<=b.stage?"dn":""} ${i==b.stage?"cu":""}"><i></i><div><b>${t("st"+i)}</b>${b.times[i]?`<small>${fmtDT(b.times[i])}</small>`:""}</div></div>`).join("");
+  const wa=`https://wa.me/91${c.ph}?text=${encodeURIComponent(t("wa_msg",{name:me?me.name:"",addr:b.addr}))}`;
+  const colBox=b.stage>=1?`<div class="col"><b>${t("col_title")}</b><div class="kv" style="margin-top:6px"><span>${t("col_name")}</span><div>${c.n} (${ng.n})</div><span>${t("col_veh")}</span><div>${c.veh}</div><span>${t("col_ph")}</span><div>${c.ph?"+91 "+c.ph:t("ph_demo")}</div></div>
+   ${b.stage<4?(c.ph?`<div class="mini"><a class="btn s" href="tel:+91${c.ph}">${t("b_call")}</a><a class="btn o s" target="_blank" rel="noopener" href="${wa}">${t("b_wa")}</a></div>`:`<div class="mini"><button class="btn s demo-c">${t("b_call")}</button><button class="btn o s demo-c">${t("b_wa")}</button></div>`):""}</div>`:"";
+  const otpBox=(b.stage===2||b.stage===3)?`<div class="otpb"><b>${t("otp_title")}</b><div class="otpn">${b.otp}</div><small>${t("otp_note")}</small>
+   ${b.stage===3?`<div class="mini"><span style="color:var(--mut)">${t("otp_demo")}:</span><input class="addr" style="padding:8px" inputmode="numeric" maxlength="6" placeholder="••••••"><button class="btn s ver" data-id="${b.id}">${t("otp_btn")}</button></div>`:""}</div>`:"";
+  const adv=b.stage<3?`<div class="mini"><button class="btn o s adv" data-id="${b.id}">▶ ${t("tk_demo")}</button><small>${t("tk_demo_n")}</small></div>`:"";
+  return `<div class="card trk"><div class="top"><div><b style="font-size:18px">${X.n}</b> <span class="badge">${t("id_l")} #${b.id}</span></div><span class="pill ${b.stage===4?"rec":"nrec"}" style="${b.stage===4?"":"background:#12306a;color:var(--mut)"}">${t("st"+b.stage)}</span></div>
+   <small>${t("scanned")}: ${fmtDate(new Date(b.created))} · ${t("pickup_on")}: ${fmtDate(dt)}, ${slot(ng)}</small><br><small>${t("addr_l")}: ${b.addr}</small>
+   <div class="tl">${steps}</div><div class="status">${line}</div>${colBox}${otpBox}${adv}</div>`;
+ }).join("");
+ document.querySelectorAll(".demo-c").forEach(b=>b.onclick=()=>sms("ℹ️ "+t("demo_call")));
+ document.querySelectorAll(".adv").forEach(btn=>btn.onclick=()=>{
+  const b=S.b.find(x=>x.id===btn.dataset.id);b.stage++;b.times[b.stage]=Date.now();
+  if(b.stage===2)sms(t("sms_pick",{otp:b.otp}));saveS();renderAll()});
+ document.querySelectorAll(".ver").forEach(btn=>btn.onclick=()=>{
+  const b=S.b.find(x=>x.id===btn.dataset.id),v=btn.parentElement.querySelector("input").value.trim();
+  if(v===b.otp){b.stage=4;b.times[4]=Date.now();saveS();renderAll();sms("🎉 "+t("otp_ok")+" +"+b.pts+" pts")}else sms("⚠️ "+t("l_wrong"))});
+}
+/* ================= PROFILE + LEADERBOARD ================= */
+function calc(B){const d=B.filter(x=>x.stage===4);return{n:B.length,rec:d.length,pts:d.reduce((a,x)=>a+x.pts,0),co2:d.reduce((a,x)=>a+x.co2,0)}}
+function regUser(u){let r={};try{r=JSON.parse(localStorage.getItem("revivo_users")||"{}")}catch(e){}r[u.phone]={name:u.name,email:u.email||""};try{localStorage.setItem("revivo_users",JSON.stringify(r))}catch(e){}}
+const SEED=[{name:"Aarav Sharma",pts:420,rec:34,co2:41.2},{name:"Priya Singh",pts:365,rec:29,co2:33.8},{name:"Rohan Gupta",pts:290,rec:24,co2:27.5},{name:"Sneha Verma",pts:210,rec:17,co2:19.9},{name:"Imran Ali",pts:150,rec:12,co2:14.1},{name:"Kavya Jain",pts:95,rec:8,co2:9.3}];
+function boardData(){
+ const rows=SEED.map(x=>({...x,seed:1}));let reg={};try{reg=JSON.parse(localStorage.getItem("revivo_users")||"{}")}catch(e){}
+ if(me)reg[me.phone]={name:me.name,email:me.email||""};
+ for(const ph in reg){let B=[];if(me&&ph===me.phone)B=S.b;else{try{B=(JSON.parse(localStorage.getItem("revivo2_"+ph)||"null")||{b:[]}).b}catch(e){}}
+  const c=calc(B);rows.push({name:reg[ph].name,pts:c.pts,rec:c.rec,co2:c.co2,me:!!(me&&ph===me.phone)})}
+ return rows.sort((a,b)=>b.pts-a.pts||b.rec-a.rec);
+}
+const LV=[{m:0,k:"lv0",e:"🌱"},{m:50,k:"lv1",e:"🌿"},{m:150,k:"lv2",e:"🌳"},{m:300,k:"lv3",e:"🌍"}];
+function renderBoard(){
+ const rows=boardData(),i=rows.findIndex(r=>r.me),medal=["🥇","🥈","🥉"];
+ let msg="";if(i>=0){const m=rows[i];msg=m.pts===0?t("lb_zero"):i===0?t("lb_top"):t("lb_up",{n:rows[i-1].pts-m.pts+1,name:rows[i-1].name})}
+ $("lbList").innerHTML=(msg?`<div class="status" style="margin:6px 16px 10px">${msg}</div>`:"")+
+  `<div class="lbr hd"><span class="rk">#</span><span>${t("lb_player")}</span><span class="hm">${t("lb_items")}</span><span class="hm">${t("lb_co2")}</span><span style="text-align:right">${t("lb_pts")}</span></div>`+
+  rows.map((r,k)=>`<div class="lbr ${r.me?"me":""}"><span class="rk">${medal[k]||k+1}</span><span class="nm"><span class="mav">${r.name.trim().charAt(0).toUpperCase()}</span><span>${r.name}${r.me?` <span class="badge pk">${t("lb_you")}</span>`:""}${r.seed?` <span class="badge">${t("lb_demo")}</span>`:""}</span></span><span class="hm">${r.rec}</span><span class="hm">${r.co2.toFixed(1)}</span><span class="pt">${r.pts}</span></div>`).join("");
+}
+function renderProfile(){
+ const el=$("pp");if(!me){el.innerHTML="";return}
+ const c=calc(S.b),rows=boardData(),rank=rows.findIndex(r=>r.me)+1;
+ let li=0;LV.forEach((l,k)=>{if(c.pts>=l.m)li=k});const L0=LV[li],nx=LV[li+1];
+ const prog=nx?Math.round(100*(c.pts-L0.m)/(nx.m-L0.m)):100,trees=(c.co2/21).toFixed(1);
+ const msg=c.rec>0?t("pf_msg1",{name:me.name,n:c.rec,co2:c.co2.toFixed(1)}):c.n>0?t("pf_msgp",{name:me.name}):t("pf_msg0");
+ el.innerHTML=`<div style="display:flex;gap:14px;align-items:center"><div class="avatar big">${me.name.trim().charAt(0).toUpperCase()}</div>
+  <div style="min-width:0"><b style="font-size:18px">${me.name}</b><br><small style="color:var(--mut);word-break:break-all">${me.email||"—"}</small><br><small style="color:var(--mut)">${t("pf_phone")}: +91 ${me.phone}</small></div></div>
+  <div class="status" style="margin-top:14px">${msg}</div>
+  <div class="pgrid"><div><b>${c.n}</b><span>${t("pf_scanned")}</span></div><div><b>${c.rec}</b><span>${t("pf_rec")}</span></div><div><b>${c.pts}</b><span>${t("pf_pts")}</span></div><div><b>${c.co2.toFixed(1)}</b><span>${t("pf_co2")}</span></div></div>
+  <div style="font-size:14px"><b>${t("pf_lvl")}: ${L0.e} ${t(L0.k)}</b></div><div class="bar"><div style="width:${prog}%"></div></div>
+  <small style="color:var(--mut)">${nx?t("pf_next",{n:nx.m-c.pts,lvl:t(nx.k)}):t("pf_max")}</small>
+  <div class="kv" style="margin-top:12px"><span>${t("pf_rank")}</span><div><b>#${rank}</b> / ${rows.length}</div></div>
+  <small style="color:var(--mut);display:block;margin-top:6px">🌳 ${t("pf_tree",{n:trees})}</small>
+  <button class="btn o s" id="logout2" style="margin-top:14px;width:100%">${t("l_out")}</button>`;
+ $("logout2").onclick=doLogout;
+}
+$("avatar").onclick=e=>{e.stopPropagation();renderProfile();$("pp").classList.toggle("hid")};
+document.addEventListener("click",e=>{if(!$("pp").classList.contains("hid")&&!$("pp").contains(e.target))$("pp").classList.add("hid")});
+
+$("reset").onclick=()=>{if(!me)return;S={b:[],addr:""};saveS();renderAll()};
+document.querySelectorAll(".langsel").forEach(x=>x.onchange=e=>{lang=e.target.value;try{localStorage.setItem("revivo_lang",lang)}catch(z){}applyLang()});
+$("loc").onclick=()=>{
+ if(!navigator.geolocation){locKey="n_deny";applyLang();return}
+ $("locNote").textContent=t("n_locing");
+ navigator.geolocation.getCurrentPosition(p=>{geo={lat:p.coords.latitude,lng:p.coords.longitude,real:true};locKey="n_ok";applyLang()},
+  ()=>{locKey="n_deny";applyLang()},{timeout:10000});
+};
+
+/* ================= MODEL ================= */
+function setMode(k){modeKey=k;$("mode").textContent=t(k)}
+async function init(){
+ if(typeof tf==="undefined"){setMode("m_nolib");return}
+ try{
+  labels=await (await fetch("model/labels.json")).json();
+  model=await tf.loadLayersModel("model/model.json");
+  mode="custom";setMode("m_custom");$("mode").className="badge live";
+ }catch(e){
+  console.warn("Custom model not loaded:",e);
+  try{if(typeof mobilenet==="undefined")throw new Error("mobilenet lib missing");
+   mob=await mobilenet.load({version:2,alpha:1.0});mode="demo";setMode("m_demo");
+  }catch(e2){console.error(e2);setMode("m_fail")}
+ }
+ if(curEl&&mode!=="none")$("go").disabled=false;
+}
+const KW={
+ "Plastic":["water bottle","pop bottle","plastic bag","bottle","jug","container","bucket","lotion","sunscreen","soap dispenser","pill bottle","shaker","toy"],
+ "Glass":["beer bottle","wine bottle","goblet","vase","beer glass","wine","red wine","perfume","jar","lens"],
+ "Metal":["can opener","tin","pot","wok","frying pan","cleaver","hammer","screw","nail","padlock","chain","spatula","ladle","strainer","safety pin","knife"],
+ "Cardboard":["carton","crate","packet","box","envelope","pizza"],
+ "Paper":["paper towel","notebook","book jacket","menu","comic book","newspaper","toilet tissue","binder","tissue","crossword"],
+ "Textile Trash":["jersey","sock","jean","sweatshirt","t-shirt","cardigan","scarf","diaper","wool","dishrag","shirt","apron","pajama","fur coat","bath towel","handkerchief"],
+ "Food Organics":["banana","orange","lemon","apple","strawberry","pineapple","broccoli","cauliflower","cucumber","mushroom","bagel","pretzel","burrito","hotdog","cheeseburger","guacamole","carbonara","fig","pomegranate","corn","zucchini","squash","artichoke","bell pepper","head cabbage","custard","meat loaf","potato"],
+ "Vegetation":["daisy","leaf","pot","hay","greenhouse","lawn","acorn","buckeye","hip","coral fungus","rapeseed","yellow lady","vine","valley","thatch"]
+};
+function mapDemo(preds){
+ const sc={};preds.forEach(p=>{const n=p.className.toLowerCase();for(const k in KW)if(KW[k].some(w=>n.includes(w)))sc[k]=(sc[k]||0)+p.probability});
+ let arr=Object.entries(sc).sort((a,b)=>b[1]-a[1]);if(!arr.length)arr=[["Miscellaneous Trash",0.4]];
+ const tot=arr.reduce((a,x)=>a+x[1],0);
+ return arr.slice(0,3).map(([l,v])=>({label:l,p:Math.min(0.95,v/Math.max(tot,0.01)*Math.min(1,tot*1.6+0.35))}));
+}
+async function predict(el){
+ if(mode==="custom"){
+  const out=tf.tidy(()=>model.predict(tf.browser.fromPixels(el).resizeBilinear([224,224]).toFloat().div(127.5).sub(1).expandDims()));
+  const d=await out.data();out.dispose();
+  return Array.from(d).map((p,i)=>({label:labels[i],p})).sort((a,b)=>b.p-a.p).slice(0,3);
+ }
+ if(mode==="demo")return mapDemo(await mob.classify(el,10));
+ throw new Error("Model is still loading or failed to load");
+}
+
+/* ================= UI ================= */
+function show(el){curEl=el;$("drop").innerHTML="";$("drop").appendChild(el);$("go").disabled=false}
+function loadFile(f){if(!f)return;stopCam();const im=new Image();im.onload=()=>show(im);im.src=URL.createObjectURL(f)}
+$("up").onclick=()=>$("file").click();$("drop").onclick=()=>{if(!curEl&&!stream)$("file").click()};
+$("file").onchange=e=>loadFile(e.target.files[0]);
+$("drop").ondragover=e=>{e.preventDefault();$("drop").classList.add("on")};
+$("drop").ondragleave=()=>$("drop").classList.remove("on");
+$("drop").ondrop=e=>{e.preventDefault();$("drop").classList.remove("on");loadFile(e.dataTransfer.files[0])};
+function stopCam(){if(stream){stream.getTracks().forEach(x=>x.stop());stream=null}$("cam").textContent=t("b_cam")}
+$("cam").onclick=async()=>{
+ if(stream){const v=$("drop").querySelector("video"),c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;c.getContext("2d").drawImage(v,0,0);stopCam();show(c);return}
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});const v=document.createElement("video");v.srcObject=stream;v.autoplay=true;v.playsInline=true;
+  $("drop").innerHTML="";$("drop").appendChild(v);$("cam").textContent=t("b_cap");curEl=null;$("go").disabled=true}
+ catch(e){alert("Camera not available / कैमरा उपलब्ध नहीं है")}
+};
+$("go").onclick=async()=>{
+ if(!curEl)return;
+ $("res").innerHTML=`<div style="display:flex;gap:14px;align-items:center"><div class="spin"></div><span>${t("r_busy")}</span></div>`;
+ try{
+  const top=await predict(curEl);
+  const key=l=>KEYS.includes(l)?l:"Miscellaneous Trash";
+  cur={cls:key(top[0].label),conf:Math.round(top[0].p*100),others:top.slice(1).map(x=>({k:key(x.label),p:Math.round(x.p*100)})),done:null,addr:S.addr||"",err:false};
+  renderResult();
+ }catch(e){cur=null;$("res").innerHTML=`<div class="sub">${t("r_err")}${e.message||e}</div>`}
+};
+gate();applyLang();init();
+</script>
+</body>
+</html>
