@@ -80,6 +80,7 @@ footer{text-align:center;color:var(--mut);padding:40px;border-top:1px solid var(
 .lbr .mav{width:34px;height:34px;border-radius:50%;background:#12306a;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}.lbr.me .mav{background:var(--pink)}
 .lbr .pt{font-weight:800;color:var(--pink);text-align:right}.lbr .rk{font-size:20px;text-align:center}
 @media(max-width:860px){.lbr{grid-template-columns:40px 1fr 80px}.lbr .hm{display:none}}
+.mk{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.mk span{background:#0a2a5e;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px}.an{display:grid;gap:8px}.an div{opacity:.35;transition:.3s}.an div.on{opacity:1;color:var(--ok)}@media(max-width:560px){.mk{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -108,7 +109,7 @@ footer{text-align:center;color:var(--mut);padding:40px;border-top:1px solid var(
     <a class="btn" href="#scan" data-i18n="b_start"></a> <a class="btn o" href="#workflow" data-i18n="b_how"></a>
   </div>
   <div class="stats">
-    <div class="stat"><b>9</b><span data-i18n="s_cats"></span></div>
+    <div class="stat"><b>10</b><span data-i18n="s_cats"></span></div>
     <div class="stat"><b id="sItems">0</b><span data-i18n="s_items"></span></div>
     <div class="stat"><b id="sPts">0</b><span data-i18n="s_pts"></span></div>
     <div class="stat"><b id="sCo2">0</b><span data-i18n="s_co2"></span></div>
@@ -231,7 +232,7 @@ b_up:"Upload Image",b_cam:"Use Camera",b_cap:"Capture Photo",b_go:"Analyse Waste
 r_hint:"Your AI report will appear here after you scan an item.",r_busy:"Analysing waste...",r_err:"Could not analyse: ",
 r1:"1. Waste category",r_conf:"Confidence",r_recov:"Recoverable",r_resid:"Residual",r_route:"Recovery route",
 r2:"2. Pickup schedule",r_ngo:"Partner NGO",r_dist:"Distance",r_date:"Pickup date",r_slot:"Pickup time",r_note:"Our partner NGO will collect this waste from your location.",
-r3:"3. What can be made from this waste",r4:"4. What would you like to do?",
+r3:"3. Products that can be made from this waste (AI suggestions)",r3s:"Based on the detected category, our AI suggests these recycled products:",an1:"Identifying waste category...",an2:"Mapping recovery pathway...",an3:"Finding products that can be made from it...",an4:"Preparing your pickup schedule...",r4:"4. What would you like to do?",
 o_buy:"Buy recycled product",o_buy_d:"Shop products made from this kind of waste. Reward points included.",
 o_don:"Donate",o_don_d:"Donate this waste to our partner NGO for community recovery. Reward points included.",
 o_red:"Redeem points",o_red_d:"Collect {n} reward points after the OTP-verified pickup.",
@@ -276,7 +277,7 @@ b_up:"इमेज अपलोड करें",b_cam:"कैमरा इस�
 r_hint:"वस्तु स्कैन करने के बाद आपकी AI रिपोर्ट यहाँ दिखेगी।",r_busy:"कचरे का विश्लेषण हो रहा है...",r_err:"विश्लेषण नहीं हो सका: ",
 r1:"1. कचरे की श्रेणी",r_conf:"विश्वसनीयता",r_recov:"रिकवर योग्य",r_resid:"अवशिष्ट",r_route:"रिकवरी मार्ग",
 r2:"2. पिकअप शेड्यूल",r_ngo:"पार्टनर NGO",r_dist:"दूरी",r_date:"पिकअप की तारीख",r_slot:"पिकअप का समय",r_note:"हमारा पार्टनर NGO यह कचरा आपकी लोकेशन से इकट्ठा करेगा।",
-r3:"3. इस कचरे से क्या बनाया जा सकता है",r4:"4. आप क्या करना चाहेंगे?",
+r3:"3. इस कचरे से बनने वाले प्रोडक्ट (AI सुझाव)",r3s:"पहचानी गई श्रेणी के आधार पर हमारा AI ये रीसाइकल्ड प्रोडक्ट सुझाता है:",an1:"कचरे की श्रेणी पहचानी जा रही है...",an2:"रिकवरी मार्ग तय हो रहा है...",an3:"उससे बनने वाले प्रोडक्ट खोजे जा रहे हैं...",an4:"आपका पिकअप शेड्यूल तैयार हो रहा है...",r4:"4. आप क्या करना चाहेंगे?",
 o_buy:"रीसाइकल्ड प्रोडक्ट खरीदें",o_buy_d:"इस तरह के कचरे से बने प्रोडक्ट खरीदें। रिवॉर्ड पॉइंट्स शामिल।",
 o_don:"दान करें",o_don_d:"समुदाय में रिकवरी के लिए यह कचरा हमारे पार्टनर NGO को दान करें। रिवॉर्ड पॉइंट्स शामिल।",
 o_red:"पॉइंट्स रिडीम करें",o_red_d:"OTP-वेरिफ़ाइड पिकअप के बाद {n} रिवॉर्ड पॉइंट्स पाएँ।",
@@ -289,32 +290,35 @@ k_title:"पहचानी जाने वाली <span>श्रेणि�
 /* ================= WASTE CATEGORY DATA ================= */
 const C={
 "Cardboard":{rec:1,pts:10,co2:0.9,
- en:{n:"Cardboard",path:"Flatten and send to paper-mill recycling",ideas:["Storage boxes and desk organisers","Craft and school-project material","Recycled packaging board"],prod:["Recycled cardboard organiser","Cardboard planters"]},
- hi:{n:"कार्डबोर्ड",path:"चपटा करके पेपर मिल रीसाइक्लिंग में भेजें",ideas:["स्टोरेज बॉक्स और डेस्क ऑर्गनाइज़र","क्राफ्ट और स्कूल प्रोजेक्ट की सामग्री","रीसाइकल्ड पैकेजिंग बोर्ड"],prod:["रीसाइकल्ड कार्डबोर्ड ऑर्गनाइज़र","कार्डबोर्ड गमले"]}},
+ en:{n:"Cardboard",path:"Flatten and send to paper-mill recycling",ideas:["📦 Storage boxes and organisers", "✏️ Pen stands and desk organisers", "🎨 Craft and school-project material", "🪴 Seedling pots and planters", "🛋️ Cardboard furniture and pet houses", "📄 Recycled packaging board"],prod:["Recycled cardboard organiser","Cardboard planters"]},
+ hi:{n:"कार्डबोर्ड",path:"चपटा करके पेपर मिल रीसाइक्लिंग में भेजें",ideas:["📦 स्टोरेज बॉक्स और ऑर्गनाइज़र", "✏️ पेन स्टैंड और डेस्क ऑर्गनाइज़र", "🎨 क्राफ्ट और स्कूल प्रोजेक्ट की सामग्री", "🪴 पौधों के गमले और प्लांटर", "🛋️ कार्डबोर्ड फ़र्नीचर और पेट हाउस", "📄 रीसाइकल्ड पैकेजिंग बोर्ड"],prod:["रीसाइकल्ड कार्डबोर्ड ऑर्गनाइज़र","कार्डबोर्ड गमले"]}},
 "Food Organics":{rec:1,pts:8,co2:0.5,
- en:{n:"Food Organics",path:"Compost or biogas digestion",ideas:["Organic compost for gardens","Biogas for cooking fuel","Bio-enzyme cleaner"],prod:["Organic compost pack","Bio-enzyme floor cleaner"]},
- hi:{n:"खाद्य जैविक कचरा",path:"कम्पोस्ट या बायोगैस बनाना",ideas:["बगीचे के लिए जैविक खाद","खाना पकाने के लिए बायोगैस","बायो-एंज़ाइम क्लीनर"],prod:["जैविक खाद का पैक","बायो-एंज़ाइम फ़र्श क्लीनर"]}},
+ en:{n:"Food Organics",path:"Compost or biogas digestion",ideas:["🌱 Organic compost for gardens", "🔥 Biogas for cooking fuel", "🧴 Bio-enzyme cleaner", "🐄 Animal feed (suitable scraps)", "🪱 Vermicompost", "⚡ Bio-CNG and electricity from biogas plants"],prod:["Organic compost pack","Bio-enzyme floor cleaner"]},
+ hi:{n:"खाद्य जैविक कचरा",path:"कम्पोस्ट या बायोगैस बनाना",ideas:["🌱 बगीचे के लिए जैविक खाद", "🔥 खाना पकाने के लिए बायोगैस", "🧴 बायो-एंज़ाइम क्लीनर", "🐄 पशु चारा (उपयुक्त बचा खाना)", "🪱 वर्मीकम्पोस्ट", "⚡ बायोगैस प्लांट से बायो-CNG और बिजली"],prod:["जैविक खाद का पैक","बायो-एंज़ाइम फ़र्श क्लीनर"]}},
 "Glass":{rec:1,pts:12,co2:0.6,
- en:{n:"Glass",path:"Collect, crush into cullet and remelt",ideas:["New glass bottles and jars","Decorative lamps and vases","Glass tiles and mosaic art"],prod:["Upcycled glass lamp","Recycled glass tumblers"]},
- hi:{n:"कांच",path:"इकट्ठा करके तोड़कर दोबारा पिघलाना",ideas:["नई कांच की बोतलें और जार","सजावटी लैंप और फूलदान","कांच की टाइलें और मोज़ेक कला"],prod:["अपसाइकल्ड कांच का लैंप","रीसाइकल्ड कांच के गिलास"]}},
+ en:{n:"Glass",path:"Collect, crush into cullet and remelt",ideas:["🍾 New glass bottles and jars", "💡 Decorative lamps", "🏺 Vases and showpieces", "🧱 Glass tiles and mosaic art", "🏗️ Glass wool insulation", "🛣️ Reflective road-paint beads"],prod:["Upcycled glass lamp","Recycled glass tumblers"]},
+ hi:{n:"कांच",path:"इकट्ठा करके तोड़कर दोबारा पिघलाना",ideas:["🍾 नई कांच की बोतलें और जार", "💡 सजावटी लैंप", "🏺 फूलदान और शोपीस", "🧱 कांच की टाइलें और मोज़ेक कला", "🏗️ ग्लास वूल इन्सुलेशन", "🛣️ सड़क पेंट के रिफ़्लेक्टिव बीड्स"],prod:["अपसाइकल्ड कांच का लैंप","रीसाइकल्ड कांच के गिलास"]}},
 "Metal":{rec:1,pts:15,co2:2.5,
- en:{n:"Metal",path:"Scrap collection and smelting",ideas:["New metal sheets and utensils","Furniture frames and hardware","Metal art and planters"],prod:["Upcycled metal planter","Recycled metal decor"]},
- hi:{n:"धातु",path:"कबाड़ इकट्ठा कर गलाकर नया बनाना",ideas:["नई धातु की चादरें और बर्तन","फ़र्नीचर के फ्रेम और हार्डवेयर","धातु कला और गमले"],prod:["अपसाइकल्ड धातु का गमला","रीसाइकल्ड धातु सजावट"]}},
+ en:{n:"Metal",path:"Scrap collection and smelting",ideas:["🥘 New utensils and cookware", "🔩 Hardware, nuts and bolts", "🪑 Furniture frames", "🪴 Metal planters", "🎨 Metal art and sculptures", "🚲 Bicycle and vehicle parts"],prod:["Upcycled metal planter","Recycled metal decor"]},
+ hi:{n:"धातु",path:"कबाड़ इकट्ठा कर गलाकर नया बनाना",ideas:["🥘 नए बर्तन और कुकवेयर", "🔩 हार्डवेयर, नट और बोल्ट", "🪑 फ़र्नीचर के फ्रेम", "🪴 धातु के गमले", "🎨 धातु कला और मूर्तियाँ", "🚲 साइकिल और वाहन के पुर्ज़े"],prod:["अपसाइकल्ड धातु का गमला","रीसाइकल्ड धातु सजावट"]}},
 "Miscellaneous Trash":{rec:0,pts:3,co2:0.1,
- en:{n:"Miscellaneous Trash",path:"Residual waste sorted at a material recovery facility",ideas:["Refuse-derived fuel (RDF) for cement plants","Separable parts recovered for recycling","Filler material for road construction"],prod:["Eco-brick (waste-filled)","Recycled filler blocks"]},
- hi:{n:"मिश्रित कचरा",path:"मटीरियल रिकवरी सेंटर पर छंटाई",ideas:["सीमेंट प्लांट के लिए RDF ईंधन","अलग किए जा सकने वाले हिस्सों की रीसाइक्लिंग","सड़क निर्माण में भराव सामग्री"],prod:["इको-ब्रिक (कचरे से भरी ईंट)","रीसाइकल्ड फिलर ब्लॉक"]}},
+ en:{n:"Miscellaneous Trash",path:"Residual waste sorted at a material recovery facility",ideas:["🏭 Refuse-derived fuel (RDF) for cement plants", "♻️ Separable parts sent for recycling", "🛣️ Filler material for road construction", "🧱 Eco-bricks filled with waste", "🔥 Waste-to-energy feedstock", "🌿 Landfill cover material"],prod:["Eco-brick (waste-filled)","Recycled filler blocks"]},
+ hi:{n:"मिश्रित कचरा",path:"मटीरियल रिकवरी सेंटर पर छंटाई",ideas:["🏭 सीमेंट प्लांट के लिए RDF ईंधन", "♻️ अलग किए गए हिस्सों की रीसाइक्लिंग", "🛣️ सड़क निर्माण में भराव सामग्री", "🧱 कचरे से भरी इको-ब्रिक", "🔥 वेस्ट-टू-एनर्जी का कच्चा माल", "🌿 लैंडफ़िल कवर सामग्री"],prod:["इको-ब्रिक (कचरे से भरी ईंट)","रीसाइकल्ड फिलर ब्लॉक"]}},
 "Paper":{rec:1,pts:8,co2:0.8,
- en:{n:"Paper",path:"Pulp recycling into new paper",ideas:["Recycled notebooks and stationery","Handmade paper and gift bags","Egg trays and paper packaging"],prod:["Recycled paper notebook","Handmade paper bags"]},
- hi:{n:"कागज़",path:"गूदा बनाकर नया कागज़ तैयार करना",ideas:["रीसाइकल्ड नोटबुक और स्टेशनरी","हैंडमेड पेपर और गिफ्ट बैग","अंडे की ट्रे और पेपर पैकेजिंग"],prod:["रीसाइकल्ड पेपर नोटबुक","हैंडमेड पेपर बैग"]}},
+ en:{n:"Paper",path:"Pulp recycling into new paper",ideas:["📓 Recycled notebooks", "🛍️ Handmade paper and gift bags", "🥚 Egg trays and packaging", "📰 Newsprint and tissue paper", "🎉 Craft paper and decor", "🖨️ Printer and photocopy paper"],prod:["Recycled paper notebook","Handmade paper bags"]},
+ hi:{n:"कागज़",path:"गूदा बनाकर नया कागज़ तैयार करना",ideas:["📓 रीसाइकल्ड नोटबुक", "🛍️ हैंडमेड पेपर और गिफ्ट बैग", "🥚 अंडे की ट्रे और पैकेजिंग", "📰 न्यूज़प्रिंट और टिशू पेपर", "🎉 क्राफ्ट पेपर और सजावट", "🖨️ प्रिंटर और फ़ोटोकॉपी पेपर"],prod:["रीसाइकल्ड पेपर नोटबुक","हैंडमेड पेपर बैग"]}},
 "Plastic":{rec:1,pts:12,co2:1.5,
- en:{n:"Plastic",path:"Sort by resin type, shred and reprocess",ideas:["Recycled-plastic bags, pots and furniture","Polyester fibre for clothing","Plastic lumber and paving blocks"],prod:["Recycled plastic tote bag","Upcycled plastic planter"]},
- hi:{n:"प्लास्टिक",path:"प्रकार के अनुसार छांटकर, कतरकर दोबारा बनाना",ideas:["रीसाइकल्ड प्लास्टिक के बैग, गमले और फ़र्नीचर","कपड़ों के लिए पॉलिएस्टर रेशा","प्लास्टिक लकड़ी और पेविंग ब्लॉक"],prod:["रीसाइकल्ड प्लास्टिक टोट बैग","अपसाइकल्ड प्लास्टिक गमला"]}},
+ en:{n:"Plastic",path:"Sort by resin type, shred and reprocess",ideas:["👜 Recycled-plastic bags", "🪴 Pots and planters", "🪑 Benches and furniture", "👕 Polyester fibre for clothing", "🧱 Paving blocks and plastic lumber", "🛣️ Plastic-bitumen roads"],prod:["Recycled plastic tote bag","Upcycled plastic planter"]},
+ hi:{n:"प्लास्टिक",path:"प्रकार के अनुसार छांटकर, कतरकर दोबारा बनाना",ideas:["👜 रीसाइकल्ड प्लास्टिक के बैग", "🪴 गमले और प्लांटर", "🪑 बेंच और फ़र्नीचर", "👕 कपड़ों के लिए पॉलिएस्टर रेशा", "🧱 पेविंग ब्लॉक और प्लास्टिक लकड़ी", "🛣️ प्लास्टिक-बिटुमेन सड़कें"],prod:["रीसाइकल्ड प्लास्टिक टोट बैग","अपसाइकल्ड प्लास्टिक गमला"]}},
 "Textile Trash":{rec:1,pts:10,co2:3.0,
- en:{n:"Textile Trash",path:"Reuse, donate or upcycle",ideas:["Tote bags and cushion covers","Rugs and doormats from fabric strips","Cleaning cloths and stuffing material"],prod:["Upcycled fabric tote bag","Patchwork rug"]},
- hi:{n:"कपड़ा कचरा",path:"दोबारा इस्तेमाल, दान या अपसाइकल",ideas:["टोट बैग और कुशन कवर","कपड़े की पट्टियों से गलीचे और पायदान","सफ़ाई के कपड़े और भराव सामग्री"],prod:["अपसाइकल्ड कपड़े का टोट बैग","पैचवर्क गलीचा"]}},
+ en:{n:"Textile Trash",path:"Reuse, donate or upcycle",ideas:["👜 Tote bags", "🛋️ Cushion covers", "🧶 Rugs and doormats from fabric strips", "🧽 Cleaning cloths", "🧸 Soft toys and stuffing material", "📄 Recycled fabric paper"],prod:["Upcycled fabric tote bag","Patchwork rug"]},
+ hi:{n:"कपड़ा कचरा",path:"दोबारा इस्तेमाल, दान या अपसाइकल",ideas:["👜 टोट बैग", "🛋️ कुशन कवर", "🧶 कपड़े की पट्टियों से गलीचे और पायदान", "🧽 सफ़ाई के कपड़े", "🧸 सॉफ़्ट टॉय और भराव सामग्री", "📄 रीसाइकल्ड कपड़े से बना कागज़"],prod:["अपसाइकल्ड कपड़े का टोट बैग","पैचवर्क गलीचा"]}},
 "Vegetation":{rec:1,pts:6,co2:0.3,
- en:{n:"Vegetation",path:"Garden composting or mulching",ideas:["Compost and mulch","Vermicompost for plants","Biochar and garden bio-fuel"],prod:["Vermicompost pack","Garden mulch bag"]},
- hi:{n:"वनस्पति / बागवानी कचरा",path:"बगीचे में खाद या मल्चिंग",ideas:["खाद और मल्च","पौधों के लिए वर्मीकम्पोस्ट","बायोचार और गार्डन बायो-फ्यूल"],prod:["वर्मीकम्पोस्ट पैक","गार्डन मल्च बैग"]}}
+ en:{n:"Vegetation",path:"Garden composting or mulching",ideas:["🌱 Compost and mulch", "🪱 Vermicompost", "⚫ Biochar", "🔥 Garden bio-fuel briquettes", "🍃 Natural fibre craft items", "🌾 Animal fodder (suitable plants)"],prod:["Vermicompost pack","Garden mulch bag"]},
+ hi:{n:"वनस्पति / बागवानी कचरा",path:"बगीचे में खाद या मल्चिंग",ideas:["🌱 खाद और मल्च", "🪱 वर्मीकम्पोस्ट", "⚫ बायोचार", "🔥 गार्डन बायो-फ्यूल ब्रिकेट", "🍃 प्राकृतिक रेशे की शिल्प वस्तुएँ", "🌾 पशु चारा (उपयुक्त पौधे)"],prod:["वर्मीकम्पोस्ट पैक","गार्डन मल्च बैग"]}},
+"Religious Waste":{rec:1,pts:8,co2:0.4,
+ en:{n:"Religious Waste",path:"Separate flowers, organic offerings, clay idols and non-biodegradable decorations before recovery",ideas:["🌼 Compost used flowers, garlands and leaves", "🎨 Extract natural colours or make floral dyes", "🪔 Make incense or dhoop from dried flowers (where suitable)", "📄 Make handmade paper or craft products from flower waste", "🪷 Reuse clean clay idols as planters or decorative pieces", "♻️ Send clay idols for suitable material recovery; keep Plaster of Paris (POP), paint and plastic decorations separate"],prod:["Flower-waste compost", "Natural flower-dye / handmade-paper products", "Upcycled clay-idol planter"]},
+ hi:{n:"धार्मिक कचरा",path:"फूल, जैविक चढ़ावा, मिट्टी की मूर्तियाँ और गैर-जैविक सजावट अलग-अलग छाँटें",ideas:["🌼 इस्तेमाल किए गए फूलों, मालाओं और पत्तियों से कम्पोस्ट बनाएँ", "🎨 फूलों से प्राकृतिक रंग या फ्लोरल डाई बनाएँ", "🪔 सूखे फूलों से अगरबत्ती या धूप बनाएँ (जहाँ उपयुक्त हो)", "📄 फूलों के कचरे से हस्तनिर्मित कागज़ और क्राफ्ट उत्पाद बनाएँ", "🪷 साफ़ मिट्टी की मूर्तियों को प्लांटर या सजावटी वस्तु के रूप में दोबारा इस्तेमाल करें", "♻️ मिट्टी की मूर्तियों को उचित मटीरियल रिकवरी में भेजें; POP, पेंट और प्लास्टिक सजावट अलग रखें"],prod:["फूलों के कचरे की जैविक खाद", "प्राकृतिक फूलों के रंग / हस्तनिर्मित कागज़", "अपसाइकल्ड मिट्टी की मूर्ति का प्लांटर"]}}
 };
 const KEYS=Object.keys(C);
 
@@ -412,7 +416,7 @@ function renderResult(){
   <span>${t("r_date")}</span><div>${fmtDate(dt)}</div>
   <span>${t("r_slot")}</span><div>${slot(ng)}</div></div>
   <small>${t("r_note")}</small></div>
- <div class="blk"><h5>${t("r3")}</h5><ul>${X.ideas.map(i=>`<li>${i}</li>`).join("")}</ul></div>
+ <div class="blk"><h5>${t("r3")}</h5><small style="color:var(--mut)">${t("r3s")}</small><div class="mk">${X.ideas.map(i=>`<span>${i}</span>`).join("")}</div></div>
  <div class="blk"><h5>${t("r4")}</h5>
   <label style="font-size:14px;color:var(--mut)">${t("a_label")}</label>
   <textarea id="addr" class="addr ${cur.err?"err":""}" rows="2" placeholder="${t("a_ph")}" ${dis}>${cur.addr||""}</textarea>
@@ -533,7 +537,8 @@ const KW={
  "Paper":["paper towel","notebook","book jacket","menu","comic book","newspaper","toilet tissue","binder","tissue","crossword"],
  "Textile Trash":["jersey","sock","jean","sweatshirt","t-shirt","cardigan","scarf","diaper","wool","dishrag","shirt","apron","pajama","fur coat","bath towel","handkerchief"],
  "Food Organics":["banana","orange","lemon","apple","strawberry","pineapple","broccoli","cauliflower","cucumber","mushroom","bagel","pretzel","burrito","hotdog","cheeseburger","guacamole","carbonara","fig","pomegranate","corn","zucchini","squash","artichoke","bell pepper","head cabbage","custard","meat loaf","potato"],
- "Vegetation":["daisy","leaf","pot","hay","greenhouse","lawn","acorn","buckeye","hip","coral fungus","rapeseed","yellow lady","vine","valley","thatch"]
+ "Vegetation":["daisy","leaf","pot","hay","greenhouse","lawn","acorn","buckeye","hip","coral fungus","rapeseed","yellow lady","vine","valley","thatch"],
+ "Religious Waste":["flower","flowers","bouquet","rose","marigold","garland","wreath","petal","blossom","lotus","hibiscus","jasmine","daisy","sunflower","orchid","vase of flowers","incense","altar","shrine","statue","sculpture","figurine","statuette","idol","ganesha","ganesh","deity","buddha","clay idol","terracotta","pottery","bust","monument"]
 };
 function mapDemo(preds){
  const sc={};preds.forEach(p=>{const n=p.className.toLowerCase();for(const k in KW)if(KW[k].some(w=>n.includes(w)))sc[k]=(sc[k]||0)+p.probability});
@@ -568,13 +573,16 @@ $("cam").onclick=async()=>{
 };
 $("go").onclick=async()=>{
  if(!curEl)return;
- $("res").innerHTML=`<div style="display:flex;gap:14px;align-items:center"><div class="spin"></div><span>${t("r_busy")}</span></div>`;
+ $("res").innerHTML=`<div style="display:flex;gap:14px;align-items:center;margin-bottom:14px"><div class="spin"></div><b>${t("r_busy")}</b></div><div class="an">${[1,2,3,4].map(i=>`<div id="an${i}">✓ ${t("an"+i)}</div>`).join("")}</div>`;
+ const T0=Date.now();let k=1;$("an1").classList.add("on");
+ const iv=setInterval(()=>{k++;const e=$("an"+k);if(e)e.classList.add("on")},450);
  try{
   const top=await predict(curEl);
+  const wait=2000-(Date.now()-T0);if(wait>0)await new Promise(r=>setTimeout(r,wait));clearInterval(iv);
   const key=l=>KEYS.includes(l)?l:"Miscellaneous Trash";
   cur={cls:key(top[0].label),conf:Math.round(top[0].p*100),others:top.slice(1).map(x=>({k:key(x.label),p:Math.round(x.p*100)})),done:null,addr:S.addr||"",err:false};
   renderResult();
- }catch(e){cur=null;$("res").innerHTML=`<div class="sub">${t("r_err")}${e.message||e}</div>`}
+ }catch(e){clearInterval(iv);cur=null;$("res").innerHTML=`<div class="sub">${t("r_err")}${e.message||e}</div>`}
 };
 gate();applyLang();init();
 </script>
