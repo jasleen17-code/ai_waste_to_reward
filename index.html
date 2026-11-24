@@ -81,6 +81,7 @@ footer{text-align:center;color:var(--mut);padding:40px;border-top:1px solid var(
 .lbr .pt{font-weight:800;color:var(--pink);text-align:right}.lbr .rk{font-size:20px;text-align:center}
 @media(max-width:860px){.lbr{grid-template-columns:40px 1fr 80px}.lbr .hm{display:none}}
 .mk{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.mk span{background:#0a2a5e;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px}.an{display:grid;gap:8px}.an div{opacity:.35;transition:.3s}.an div.on{opacity:1;color:var(--ok)}@media(max-width:560px){.mk{grid-template-columns:1fr}}
+.chip{background:#0a2a5e;border:1px solid var(--line);color:#fff;border-radius:10px;padding:9px 10px;cursor:pointer;font-family:inherit;font-size:14px;text-align:left}.chip.sel{border-color:var(--pink);box-shadow:0 0 0 1px var(--pink)}.chip:disabled{opacity:.6;cursor:default}
 </style>
 </head>
 <body>
@@ -109,7 +110,7 @@ footer{text-align:center;color:var(--mut);padding:40px;border-top:1px solid var(
     <a class="btn" href="#scan" data-i18n="b_start"></a> <a class="btn o" href="#workflow" data-i18n="b_how"></a>
   </div>
   <div class="stats">
-    <div class="stat"><b>10</b><span data-i18n="s_cats"></span></div>
+    <div class="stat"><b id="sCats">9</b><span data-i18n="s_cats"></span></div>
     <div class="stat"><b id="sItems">0</b><span data-i18n="s_items"></span></div>
     <div class="stat"><b id="sPts">0</b><span data-i18n="s_pts"></span></div>
     <div class="stat"><b id="sCo2">0</b><span data-i18n="s_co2"></span></div>
@@ -195,7 +196,7 @@ const LOC={en:"en-IN",hi:"hi-IN"};
 
 /* ================= TRANSLATIONS ================= */
 const L={
-en:{ph_demo:"+91 XXXXX XXXXX (demo)",demo_call:"Demo mode: no real contact number is configured, so calling and WhatsApp are disabled. In the live system this opens the collector's real contact.",l_email:"Email address",nav_lb:"Leaderboard",lb_title:"Eco <span>Leaderboard</span>",lb_sub:"Every verified pickup earns reward points, whether you donate or buy recycled products. Climb the ranks and lead the green movement!",
+en:{rel_q:"What is it made of? (this changes the recovery advice)",ph_demo:"+91 XXXXX XXXXX (demo)",demo_call:"Demo mode: no real contact number is configured, so calling and WhatsApp are disabled. In the live system this opens the collector's real contact.",l_email:"Email address",nav_lb:"Leaderboard",lb_title:"Eco <span>Leaderboard</span>",lb_sub:"Every verified pickup earns reward points, whether you donate or buy recycled products. Climb the ranks and lead the green movement!",
 lb_note:"Participants marked demo are sample entries for the prototype. Real users who log in on this device appear automatically.",lb_player:"Player",lb_items:"Recovered",lb_co2:"CO₂ (kg)",lb_pts:"Points",lb_you:"You",lb_demo:"demo",
 lb_up:"🚀 Only {n} more points to overtake {name}!",lb_top:"🏆 You are #1 on the leaderboard! Keep it up!",lb_zero:"Complete your first OTP-verified pickup to start climbing the leaderboard.",
 pf_phone:"Phone",pf_scanned:"Items scanned",pf_rec:"Items recovered",pf_pts:"Reward points",pf_co2:"CO₂ avoided (kg)",pf_lvl:"Level",pf_next:"{n} more points to reach {lvl}",pf_max:"Top level reached!",pf_rank:"Leaderboard rank",pf_tree:"≈ {n} trees' yearly CO₂ absorption (estimate)",
@@ -226,7 +227,7 @@ w2t:"Map Recovery",w2d:"Waste is matched with suitable recovery pathways, collec
 w3t:"Collect & Recover",w3d:"Waste is routed for collection, recycling, reuse or upcycling through connected recovery systems.",
 w4t:"Reward & Track",w4d:"Users receive participation incentives while recovery activities and environmental impact are tracked.",
 sc_title:"AI Waste <span>Scanner</span>",sc_model:"Model status:",
-m_load:"loading...",m_custom:"Custom model trained on waste dataset",m_demo:"Demo mode (generic model) - trained model/ folder not found",m_fail:"Model failed to load",m_nolib:"AI libraries failed to load - check internet and reload",
+m_load:"loading...",m_custom:"Custom model trained on waste dataset",m_demo:"Demo mode (generic model, cannot reliably detect idols) - trained model/ folder not found",m_fail:"Model failed to load",m_nolib:"AI libraries failed to load - check internet and reload",
 d_text:"Drop an image here or click to upload",d_sub:"JPG / PNG of a single waste item works best",
 b_up:"Upload Image",b_cam:"Use Camera",b_cap:"Capture Photo",b_go:"Analyse Waste",
 r_hint:"Your AI report will appear here after you scan an item.",r_busy:"Analysing waste...",r_err:"Could not analyse: ",
@@ -240,7 +241,7 @@ c_buy:"Great choice! Recycled products you can buy:",c_don:"Thank you! Your dona
 i_title:"Reward & <span>Impact Tracker</span>",i_sub:"Every scan, pickup and choice is recorded here. Points and impact count after the OTP-verified handover.",
 i_items:"Items scanned",i_pts:"Reward points",i_co2:"kg CO₂ avoided",i_rec:"Recyclable share",i_none:"No scans yet.",i_reset:"Reset tracker",
 k_title:"Recognised <span>Categories</span>",foot:"Identify | Recover | Reward"},
-hi:{ph_demo:"+91 XXXXX XXXXX (डेमो)",demo_call:"डेमो मोड: कोई असली संपर्क नंबर सेट नहीं है, इसलिए कॉल और WhatsApp बंद हैं। असली सिस्टम में यह कलेक्टर का असली संपर्क खोलेगा।",l_email:"ईमेल पता",nav_lb:"लीडरबोर्ड",lb_title:"इको <span>लीडरबोर्ड</span>",lb_sub:"हर वेरिफ़ाइड पिकअप पर रिवॉर्ड पॉइंट्स मिलते हैं, चाहे आप दान करें या रीसाइकल्ड प्रोडक्ट खरीदें। रैंक चढ़ें और हरित अभियान में आगे रहें!",
+hi:{rel_q:"यह किस चीज़ से बनी है? (इससे रिकवरी की सलाह बदलती है)",ph_demo:"+91 XXXXX XXXXX (डेमो)",demo_call:"डेमो मोड: कोई असली संपर्क नंबर सेट नहीं है, इसलिए कॉल और WhatsApp बंद हैं। असली सिस्टम में यह कलेक्टर का असली संपर्क खोलेगा।",l_email:"ईमेल पता",nav_lb:"लीडरबोर्ड",lb_title:"इको <span>लीडरबोर्ड</span>",lb_sub:"हर वेरिफ़ाइड पिकअप पर रिवॉर्ड पॉइंट्स मिलते हैं, चाहे आप दान करें या रीसाइकल्ड प्रोडक्ट खरीदें। रैंक चढ़ें और हरित अभियान में आगे रहें!",
 lb_note:"डेमो लिखे प्रतिभागी प्रोटोटाइप के नमूना एंट्री हैं। इस डिवाइस पर लॉगिन करने वाले असली यूज़र अपने आप दिखते हैं।",lb_player:"खिलाड़ी",lb_items:"रिकवर",lb_co2:"CO₂ (किग्रा)",lb_pts:"पॉइंट्स",lb_you:"आप",lb_demo:"डेमो",
 lb_up:"🚀 {name} से आगे निकलने के लिए बस {n} पॉइंट्स और!",lb_top:"🏆 आप लीडरबोर्ड पर #1 हैं! ऐसे ही जारी रखें!",lb_zero:"लीडरबोर्ड पर चढ़ना शुरू करने के लिए अपना पहला OTP-वेरिफ़ाइड पिकअप पूरा करें।",
 pf_phone:"फ़ोन",pf_scanned:"स्कैन की गई वस्तुएँ",pf_rec:"रिकवर की गई वस्तुएँ",pf_pts:"रिवॉर्ड पॉइंट्स",pf_co2:"CO₂ बचाई (किग्रा)",pf_lvl:"लेवल",pf_next:"{lvl} तक पहुँचने के लिए {n} पॉइंट्स और",pf_max:"सबसे ऊँचे लेवल पर पहुँच गए!",pf_rank:"लीडरबोर्ड रैंक",pf_tree:"≈ {n} पेड़ों के सालाना CO₂ अवशोषण के बराबर (अनुमान)",
@@ -271,7 +272,7 @@ w2t:"रिकवरी मैपिंग",w2d:"कचरे को उपय�
 w3t:"संग्रह और रिकवरी",w3d:"जुड़े हुए रिकवरी सिस्टम के ज़रिए कचरा संग्रह, रीसाइक्लिंग, पुन: उपयोग या अपसाइकल के लिए भेजा जाता है।",
 w4t:"रिवॉर्ड और ट्रैकिंग",w4d:"यूज़र को भागीदारी के लिए प्रोत्साहन मिलता है और रिकवरी व पर्यावरणीय प्रभाव ट्रैक होता है।",
 sc_title:"AI कचरा <span>स्कैनर</span>",sc_model:"मॉडल स्थिति:",
-m_load:"लोड हो रहा है...",m_custom:"कचरा डेटासेट पर प्रशिक्षित कस्टम मॉडल",m_demo:"डेमो मोड (सामान्य मॉडल) - प्रशिक्षित model/ फ़ोल्डर नहीं मिला",m_fail:"मॉडल लोड नहीं हो सका",m_nolib:"AI लाइब्रेरी लोड नहीं हुईं - इंटरनेट जाँचें और रीलोड करें",
+m_load:"लोड हो रहा है...",m_custom:"कचरा डेटासेट पर प्रशिक्षित कस्टम मॉडल",m_demo:"डेमो मोड (सामान्य मॉडल, मूर्तियाँ भरोसेमंद ढंग से नहीं पहचानता) - प्रशिक्षित model/ फ़ोल्डर नहीं मिला",m_fail:"मॉडल लोड नहीं हो सका",m_nolib:"AI लाइब्रेरी लोड नहीं हुईं - इंटरनेट जाँचें और रीलोड करें",
 d_text:"यहाँ इमेज डालें या अपलोड करने के लिए क्लिक करें",d_sub:"किसी एक कचरे की JPG / PNG फ़ोटो सबसे अच्छी रहती है",
 b_up:"इमेज अपलोड करें",b_cam:"कैमरा इस्तेमाल करें",b_cap:"फ़ोटो लें",b_go:"कचरा एनालाइज़ करें",
 r_hint:"वस्तु स्कैन करने के बाद आपकी AI रिपोर्ट यहाँ दिखेगी।",r_busy:"कचरे का विश्लेषण हो रहा है...",r_err:"विश्लेषण नहीं हो सका: ",
@@ -315,10 +316,20 @@ const C={
  hi:{n:"कपड़ा कचरा",path:"दोबारा इस्तेमाल, दान या अपसाइकल",ideas:["👜 टोट बैग", "🛋️ कुशन कवर", "🧶 कपड़े की पट्टियों से गलीचे और पायदान", "🧽 सफ़ाई के कपड़े", "🧸 सॉफ़्ट टॉय और भराव सामग्री", "📄 रीसाइकल्ड कपड़े से बना कागज़"],prod:["अपसाइकल्ड कपड़े का टोट बैग","पैचवर्क गलीचा"]}},
 "Vegetation":{rec:1,pts:6,co2:0.3,
  en:{n:"Vegetation",path:"Garden composting or mulching",ideas:["🌱 Compost and mulch", "🪱 Vermicompost", "⚫ Biochar", "🔥 Garden bio-fuel briquettes", "🍃 Natural fibre craft items", "🌾 Animal fodder (suitable plants)"],prod:["Vermicompost pack","Garden mulch bag"]},
- hi:{n:"वनस्पति / बागवानी कचरा",path:"बगीचे में खाद या मल्चिंग",ideas:["🌱 खाद और मल्च", "🪱 वर्मीकम्पोस्ट", "⚫ बायोचार", "🔥 गार्डन बायो-फ्यूल ब्रिकेट", "🍃 प्राकृतिक रेशे की शिल्प वस्तुएँ", "🌾 पशु चारा (उपयुक्त पौधे)"],prod:["वर्मीकम्पोस्ट पैक","गार्डन मल्च बैग"]}},
-"Religious Waste":{rec:1,pts:8,co2:0.4,
- en:{n:"Religious Waste",path:"Separate flowers, organic offerings, clay idols and non-biodegradable decorations before recovery",ideas:["🌼 Compost used flowers, garlands and leaves", "🎨 Extract natural colours or make floral dyes", "🪔 Make incense or dhoop from dried flowers (where suitable)", "📄 Make handmade paper or craft products from flower waste", "🪷 Reuse clean clay idols as planters or decorative pieces", "♻️ Send clay idols for suitable material recovery; keep Plaster of Paris (POP), paint and plastic decorations separate"],prod:["Flower-waste compost", "Natural flower-dye / handmade-paper products", "Upcycled clay-idol planter"]},
- hi:{n:"धार्मिक कचरा",path:"फूल, जैविक चढ़ावा, मिट्टी की मूर्तियाँ और गैर-जैविक सजावट अलग-अलग छाँटें",ideas:["🌼 इस्तेमाल किए गए फूलों, मालाओं और पत्तियों से कम्पोस्ट बनाएँ", "🎨 फूलों से प्राकृतिक रंग या फ्लोरल डाई बनाएँ", "🪔 सूखे फूलों से अगरबत्ती या धूप बनाएँ (जहाँ उपयुक्त हो)", "📄 फूलों के कचरे से हस्तनिर्मित कागज़ और क्राफ्ट उत्पाद बनाएँ", "🪷 साफ़ मिट्टी की मूर्तियों को प्लांटर या सजावटी वस्तु के रूप में दोबारा इस्तेमाल करें", "♻️ मिट्टी की मूर्तियों को उचित मटीरियल रिकवरी में भेजें; POP, पेंट और प्लास्टिक सजावट अलग रखें"],prod:["फूलों के कचरे की जैविक खाद", "प्राकृतिक फूलों के रंग / हस्तनिर्मित कागज़", "अपसाइकल्ड मिट्टी की मूर्ति का प्लांटर"]}}
+ hi:{n:"वनस्पति / बागवानी कचरा",path:"बगीचे में खाद या मल्चिंग",ideas:["🌱 खाद और मल्च", "🪱 वर्मीकम्पोस्ट", "⚫ बायोचार", "🔥 गार्डन बायो-फ्यूल ब्रिकेट", "🍃 प्राकृतिक रेशे की शिल्प वस्तुएँ", "🌾 पशु चारा (उपयुक्त पौधे)"],prod:["वर्मीकम्पोस्ट पैक","गार्डन मल्च बैग"]}}
+};
+C["Religious Waste"]={rec:1,pts:15,co2:0.8,
+ en:{n:"Religious Waste (Idols & Puja Items)",path:"Respectful recovery: clay returns to soil, flowers are composted, other items are reused or recycled",ideas:["🪴 Clay idols: eco-friendly home immersion, then reuse the soil for plants","🌸 Puja flowers: compost, vermicompost or natural dyes","🕯️ Diyas and clay items: reused for craft and planters","🕉️ Incense sticks (agarbatti) from used flowers","🗿 Metal and stone idols: donated, reused or re-consecrated","🙏 Collected by our partner NGO for respectful recovery"],prod:["Incense sticks from puja flowers","Natural flower-dye colours"]},
+ hi:{n:"धार्मिक कचरा (मूर्तियाँ और पूजा सामग्री)",path:"सम्मानपूर्वक रिकवरी: मिट्टी वापस मिट्टी में, फूलों की खाद, बाकी चीज़ों का पुन: उपयोग या रीसाइक्लिंग",ideas:["🪴 मिट्टी की मूर्ति: घर में पर्यावरण-अनुकूल विसर्जन, फिर मिट्टी पौधों में","🌸 पूजा के फूल: कम्पोस्ट, वर्मीकम्पोस्ट या प्राकृतिक रंग","🕯️ दिये और मिट्टी की चीज़ें: क्राफ्ट और गमलों में दोबारा उपयोग","🕉️ इस्तेमाल हुए फूलों से अगरबत्ती","🗿 धातु और पत्थर की मूर्तियाँ: दान, दोबारा उपयोग या पुन: प्राण-प्रतिष्ठा","🙏 सम्मानपूर्वक रिकवरी के लिए हमारा पार्टनर NGO संग्रह करेगा"],prod:["पूजा के फूलों से बनी अगरबत्ती","फूलों से बने प्राकृतिक रंग"]}};
+const REL={
+ clay:{en:{l:"🏺 Clay (mitti) idol",note:"Avoid immersing in rivers or ponds.",ideas:["🪴 Dissolve at home in a bucket (eco-friendly immersion), then use the soil for plants","🏺 Re-mould the clay into new idols, diyas or pots","🎨 Clay craft and pottery material","🌱 Soil conditioner for gardens","🏫 Workshop material for artisans and schools","🙏 Collected by our partner NGO for respectful recovery"]},
+  hi:{l:"🏺 मिट्टी की मूर्ति",note:"नदी या तालाब में विसर्जन से बचें।",ideas:["🪴 घर में बाल्टी में विसर्जन (पर्यावरण-अनुकूल) करके मिट्टी पौधों में डालें","🏺 मिट्टी को दोबारा ढालकर नई मूर्ति, दिये या गमले बनाएँ","🎨 क्राफ्ट और कुम्हारी के लिए सामग्री","🌱 बगीचे के लिए मिट्टी सुधारक","🏫 कारीगरों और स्कूलों की वर्कशॉप के लिए सामग्री","🙏 सम्मानपूर्वक रिकवरी के लिए हमारा पार्टनर NGO संग्रह करेगा"]}},
+ pop:{en:{l:"⚪ Plaster of Paris (POP) idol",note:"Do not put POP idols in water bodies.",ideas:["🚫 Do not immerse in rivers or ponds: POP does not dissolve and harms water life","♻️ NGO collects and safely reprocesses POP","🏗️ Crushed POP reused as filler in construction material","🎨 Reused for craft and decorative moulds","🧱 Eco-brick and plaster filler","🙏 Collected by our partner NGO for respectful recovery"]},
+  hi:{l:"⚪ प्लास्टर ऑफ़ पेरिस (POP) की मूर्ति",note:"POP की मूर्ति को जल स्रोत में न डालें।",ideas:["🚫 नदी या तालाब में विसर्जित न करें: POP घुलता नहीं और जलीय जीवन को नुकसान पहुँचाता है","♻️ NGO इकट्ठा करके POP को सुरक्षित तरीके से दोबारा प्रोसेस करता है","🏗️ पिसा हुआ POP निर्माण सामग्री में भराव के रूप में","🎨 क्राफ्ट और सजावटी साँचों में दोबारा उपयोग","🧱 इको-ब्रिक और प्लास्टर फ़िलर","🙏 सम्मानपूर्वक रिकवरी के लिए हमारा पार्टनर NGO संग्रह करेगा"]}},
+ stone:{en:{l:"🗿 Metal / stone idol",note:"Reuse is preferred, in keeping with the spirit of the idol.",ideas:["🙏 Donate to a temple or community for reuse","🔔 Gift to someone who will worship it","🥘 Metal: melted and recast by artisans","🧱 Stone: reused as building or garden material","🎨 Restored by artisans","♻️ Collected by our partner NGO for recovery"]},
+  hi:{l:"🗿 धातु / पत्थर की मूर्ति",note:"मूर्ति की भावना का सम्मान करते हुए दोबारा उपयोग को प्राथमिकता दें।",ideas:["🙏 मंदिर या समुदाय को दान करें ताकि दोबारा उपयोग हो","🔔 किसी ऐसे व्यक्ति को भेंट करें जो उसकी पूजा करेगा","🥘 धातु: कारीगर गलाकर दोबारा ढालते हैं","🧱 पत्थर: निर्माण या बगीचे की सामग्री में दोबारा उपयोग","🎨 कारीगरों द्वारा मरम्मत और पुनर्स्थापन","♻️ रिकवरी के लिए हमारा पार्टनर NGO संग्रह करेगा"]}},
+ flowers:{en:{l:"🌸 Flowers, garlands & puja items",note:"Please do not throw puja flowers in garbage or rivers.",ideas:["🌱 Compost or vermicompost","🧴 Natural dyes and colours (e.g. Holi colours)","🕯️ Incense sticks (agarbatti) and dhoop","🧼 Flower-based soaps and rose water","🪴 Organic fertiliser for gardens","🧵 Dried petals for craft and potpourri"]},
+  hi:{l:"🌸 फूल, माला और पूजा सामग्री",note:"कृपया पूजा के फूल कूड़े या नदी में न फेंकें।",ideas:["🌱 कम्पोस्ट या वर्मीकम्पोस्ट","🧴 प्राकृतिक रंग (जैसे होली के रंग)","🕯️ अगरबत्ती और धूप","🧼 फूलों से बने साबुन और गुलाब जल","🪴 बगीचे के लिए जैविक खाद","🧵 सूखी पंखुड़ियों से क्राफ्ट और पोटपौरी"]}}
 };
 const KEYS=Object.keys(C);
 
@@ -372,6 +383,7 @@ function doLogout(){me=null;cur=null;try{localStorage.removeItem("revivo_session
 
 /* ================= RENDER ================= */
 function applyLang(){
+ $("sCats").textContent=KEYS.length;
  document.documentElement.lang=lang;document.querySelectorAll(".langsel").forEach(x=>x.value=lang);
  document.querySelectorAll("[data-i18n]").forEach(e=>e.innerHTML=t(e.dataset.i18n));
  document.querySelectorAll("[data-ph]").forEach(e=>e.placeholder=t(e.dataset.ph));
@@ -399,6 +411,7 @@ function renderResult(){
  const I=C[cur.cls],X=I[lang],bk=cur.done?S.b.find(x=>x.id===cur.bid):null;
  const ng=bk?NGOS.find(n=>n.n===bk.ngo):withDist()[0],dist=bk?bk.dist:ng.d,dt=bk?new Date(bk.date):nextPickup(ng);
  const sel=o=>cur.done===o?"sel":"",dis=cur.done?"disabled":"";
+ const R=cur.cls==="Religious Waste",mat=cur.mat||"clay",ideas=R?REL[mat][lang].ideas:X.ideas;
  let msg="";
  if(cur.done){
   const m={buy:`${t("c_buy")}<ul>${X.prod.map(p=>`<li>${p}</li>`).join("")}</ul>`,don:t("c_don",{ngo:ng.n})};
@@ -416,7 +429,7 @@ function renderResult(){
   <span>${t("r_date")}</span><div>${fmtDate(dt)}</div>
   <span>${t("r_slot")}</span><div>${slot(ng)}</div></div>
   <small>${t("r_note")}</small></div>
- <div class="blk"><h5>${t("r3")}</h5><small style="color:var(--mut)">${t("r3s")}</small><div class="mk">${X.ideas.map(i=>`<span>${i}</span>`).join("")}</div></div>
+ <div class="blk"><h5>${t("r3")}</h5>${R?`<small style="color:var(--mut)">${t("rel_q")}</small><div class="mk" style="margin:6px 0 12px">${Object.keys(REL).map(k=>`<button class="chip ${k===mat?"sel":""}" data-m="${k}" ${dis}>${REL[k][lang].l}</button>`).join("")}</div><div class="status">🙏 ${REL[mat][lang].note}</div>`:""}<small style="color:var(--mut)">${t("r3s")}</small><div class="mk">${ideas.map(i=>`<span>${i}</span>`).join("")}</div></div>
  <div class="blk"><h5>${t("r4")}</h5>
   <label style="font-size:14px;color:var(--mut)">${t("a_label")}</label>
   <textarea id="addr" class="addr ${cur.err?"err":""}" rows="2" placeholder="${t("a_ph")}" ${dis}>${cur.addr||""}</textarea>
@@ -426,6 +439,7 @@ function renderResult(){
   <button class="opt ${sel("don")}" data-o="don" ${dis}><b>🤝 ${t("o_don")}</b><span>${t("o_don_d")}</span></button></div>${msg}</div>`;
  const ad=$("addr");if(ad)ad.oninput=()=>{cur.addr=ad.value};
  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>choose(b.dataset.o));
+ document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{cur.mat=b.dataset.m;renderResult()});
 }
 function choose(o){
  if(!cur||cur.done)return;
@@ -433,7 +447,7 @@ function choose(o){
  if(cur.addr.trim().length<8){cur.err=true;renderResult();return}
  cur.err=false;
  const I=C[cur.cls],ng=withDist()[0],dt=nextPickup(ng),now=Date.now();
- const b={id:"RVV"+String(now).slice(-6),cls:cur.cls,conf:cur.conf,opt:o,ngo:ng.n,dist:ng.d,created:now,date:dt.getTime(),addr:cur.addr.trim(),stage:0,times:[now],otp:otp6(),pts:I.pts,co2:I.co2,rec:I.rec};
+ const b={id:"RVV"+String(now).slice(-6),cls:cur.cls,conf:cur.conf,opt:o,ngo:ng.n,dist:ng.d,created:now,date:dt.getTime(),addr:cur.addr.trim(),stage:0,times:[now],otp:otp6(),pts:I.pts,co2:I.co2,rec:I.rec,mat:cur.cls==="Religious Waste"?(cur.mat||"clay"):null};
  S.b.push(b);S.addr=b.addr;saveS();cur.done=o;cur.bid=b.id;renderAll();
 }
 function renderTrack(){
@@ -537,8 +551,8 @@ const KW={
  "Paper":["paper towel","notebook","book jacket","menu","comic book","newspaper","toilet tissue","binder","tissue","crossword"],
  "Textile Trash":["jersey","sock","jean","sweatshirt","t-shirt","cardigan","scarf","diaper","wool","dishrag","shirt","apron","pajama","fur coat","bath towel","handkerchief"],
  "Food Organics":["banana","orange","lemon","apple","strawberry","pineapple","broccoli","cauliflower","cucumber","mushroom","bagel","pretzel","burrito","hotdog","cheeseburger","guacamole","carbonara","fig","pomegranate","corn","zucchini","squash","artichoke","bell pepper","head cabbage","custard","meat loaf","potato"],
- "Vegetation":["daisy","leaf","pot","hay","greenhouse","lawn","acorn","buckeye","hip","coral fungus","rapeseed","yellow lady","vine","valley","thatch"],
- "Religious Waste":["flower","flowers","bouquet","rose","marigold","garland","wreath","petal","blossom","lotus","hibiscus","jasmine","daisy","sunflower","orchid","vase of flowers","incense","altar","shrine","statue","sculpture","figurine","statuette","idol","ganesha","ganesh","deity","buddha","clay idol","terracotta","pottery","bust","monument"]
+ "Religious Waste":["totem pole","altar","prayer rug","candle","pedestal","vestment","bell cote","church","monastery","mosque","stupa","incense","rosary","marigold","garland"],
+ "Vegetation":["daisy","leaf","pot","hay","greenhouse","lawn","acorn","buckeye","hip","coral fungus","rapeseed","yellow lady","vine","valley","thatch"]
 };
 function mapDemo(preds){
  const sc={};preds.forEach(p=>{const n=p.className.toLowerCase();for(const k in KW)if(KW[k].some(w=>n.includes(w)))sc[k]=(sc[k]||0)+p.probability});
@@ -579,7 +593,7 @@ $("go").onclick=async()=>{
  try{
   const top=await predict(curEl);
   const wait=2000-(Date.now()-T0);if(wait>0)await new Promise(r=>setTimeout(r,wait));clearInterval(iv);
-  const key=l=>KEYS.includes(l)?l:"Miscellaneous Trash";
+  const key=l=>{const n=String(l).replace(/^\d+[-_ ]*/,"").replace(/_/g," ").trim().toLowerCase();return KEYS.find(k=>k.toLowerCase()===n)||"Miscellaneous Trash"};
   cur={cls:key(top[0].label),conf:Math.round(top[0].p*100),others:top.slice(1).map(x=>({k:key(x.label),p:Math.round(x.p*100)})),done:null,addr:S.addr||"",err:false};
   renderResult();
  }catch(e){clearInterval(iv);cur=null;$("res").innerHTML=`<div class="sub">${t("r_err")}${e.message||e}</div>`}
