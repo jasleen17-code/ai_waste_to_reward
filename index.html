@@ -196,7 +196,7 @@ const LOC={en:"en-IN",hi:"hi-IN"};
 
 /* ================= TRANSLATIONS ================= */
 const L={
-en:{rel_q:"What is it made of? (this changes the recovery advice)",ph_demo:"+91 XXXXX XXXXX (demo)",demo_call:"Demo mode: no real contact number is configured, so calling and WhatsApp are disabled. In the live system this opens the collector's real contact.",l_email:"Email address",nav_lb:"Leaderboard",lb_title:"Eco <span>Leaderboard</span>",lb_sub:"Every verified pickup earns reward points, whether you donate or buy recycled products. Climb the ranks and lead the green movement!",
+en:{man_hint:"The AI model could not load. You can still continue by choosing the waste category yourself:",man_retry:"Retry loading AI model",man_tag:"Manually selected (AI model unavailable)",rel_q:"What is it made of? (this changes the recovery advice)",ph_demo:"+91 XXXXX XXXXX (demo)",demo_call:"Demo mode: no real contact number is configured, so calling and WhatsApp are disabled. In the live system this opens the collector's real contact.",l_email:"Email address",nav_lb:"Leaderboard",lb_title:"Eco <span>Leaderboard</span>",lb_sub:"Every verified pickup earns reward points, whether you donate or buy recycled products. Climb the ranks and lead the green movement!",
 lb_note:"Participants marked demo are sample entries for the prototype. Real users who log in on this device appear automatically.",lb_player:"Player",lb_items:"Recovered",lb_co2:"CO₂ (kg)",lb_pts:"Points",lb_you:"You",lb_demo:"demo",
 lb_up:"🚀 Only {n} more points to overtake {name}!",lb_top:"🏆 You are #1 on the leaderboard! Keep it up!",lb_zero:"Complete your first OTP-verified pickup to start climbing the leaderboard.",
 pf_phone:"Phone",pf_scanned:"Items scanned",pf_rec:"Items recovered",pf_pts:"Reward points",pf_co2:"CO₂ avoided (kg)",pf_lvl:"Level",pf_next:"{n} more points to reach {lvl}",pf_max:"Top level reached!",pf_rank:"Leaderboard rank",pf_tree:"≈ {n} trees' yearly CO₂ absorption (estimate)",
@@ -227,7 +227,7 @@ w2t:"Map Recovery",w2d:"Waste is matched with suitable recovery pathways, collec
 w3t:"Collect & Recover",w3d:"Waste is routed for collection, recycling, reuse or upcycling through connected recovery systems.",
 w4t:"Reward & Track",w4d:"Users receive participation incentives while recovery activities and environmental impact are tracked.",
 sc_title:"AI Waste <span>Scanner</span>",sc_model:"Model status:",
-m_load:"loading...",m_custom:"Custom model trained on waste dataset",m_demo:"Demo mode (generic model, cannot reliably detect idols) - trained model/ folder not found",m_fail:"Model failed to load",m_nolib:"AI libraries failed to load - check internet and reload",
+m_load:"loading...",m_custom:"Custom model trained on waste dataset",m_demo:"Demo mode (generic model, cannot reliably detect idols) - trained model/ folder not found",m_fail:"Model failed to load (check internet) - tap here to retry",m_nolib:"AI libraries failed to load - check internet and reload",
 d_text:"Drop an image here or click to upload",d_sub:"JPG / PNG of a single waste item works best",
 b_up:"Upload Image",b_cam:"Use Camera",b_cap:"Capture Photo",b_go:"Analyse Waste",
 r_hint:"Your AI report will appear here after you scan an item.",r_busy:"Analysing waste...",r_err:"Could not analyse: ",
@@ -241,7 +241,7 @@ c_buy:"Great choice! Recycled products you can buy:",c_don:"Thank you! Your dona
 i_title:"Reward & <span>Impact Tracker</span>",i_sub:"Every scan, pickup and choice is recorded here. Points and impact count after the OTP-verified handover.",
 i_items:"Items scanned",i_pts:"Reward points",i_co2:"kg CO₂ avoided",i_rec:"Recyclable share",i_none:"No scans yet.",i_reset:"Reset tracker",
 k_title:"Recognised <span>Categories</span>",foot:"Identify | Recover | Reward"},
-hi:{rel_q:"यह किस चीज़ से बनी है? (इससे रिकवरी की सलाह बदलती है)",ph_demo:"+91 XXXXX XXXXX (डेमो)",demo_call:"डेमो मोड: कोई असली संपर्क नंबर सेट नहीं है, इसलिए कॉल और WhatsApp बंद हैं। असली सिस्टम में यह कलेक्टर का असली संपर्क खोलेगा।",l_email:"ईमेल पता",nav_lb:"लीडरबोर्ड",lb_title:"इको <span>लीडरबोर्ड</span>",lb_sub:"हर वेरिफ़ाइड पिकअप पर रिवॉर्ड पॉइंट्स मिलते हैं, चाहे आप दान करें या रीसाइकल्ड प्रोडक्ट खरीदें। रैंक चढ़ें और हरित अभियान में आगे रहें!",
+hi:{man_hint:"AI मॉडल लोड नहीं हो सका। आप खुद कचरे की श्रेणी चुनकर आगे बढ़ सकते हैं:",man_retry:"AI मॉडल दोबारा लोड करें",man_tag:"खुद चुनी गई श्रेणी (AI मॉडल उपलब्ध नहीं)",rel_q:"यह किस चीज़ से बनी है? (इससे रिकवरी की सलाह बदलती है)",ph_demo:"+91 XXXXX XXXXX (डेमो)",demo_call:"डेमो मोड: कोई असली संपर्क नंबर सेट नहीं है, इसलिए कॉल और WhatsApp बंद हैं। असली सिस्टम में यह कलेक्टर का असली संपर्क खोलेगा।",l_email:"ईमेल पता",nav_lb:"लीडरबोर्ड",lb_title:"इको <span>लीडरबोर्ड</span>",lb_sub:"हर वेरिफ़ाइड पिकअप पर रिवॉर्ड पॉइंट्स मिलते हैं, चाहे आप दान करें या रीसाइकल्ड प्रोडक्ट खरीदें। रैंक चढ़ें और हरित अभियान में आगे रहें!",
 lb_note:"डेमो लिखे प्रतिभागी प्रोटोटाइप के नमूना एंट्री हैं। इस डिवाइस पर लॉगिन करने वाले असली यूज़र अपने आप दिखते हैं।",lb_player:"खिलाड़ी",lb_items:"रिकवर",lb_co2:"CO₂ (किग्रा)",lb_pts:"पॉइंट्स",lb_you:"आप",lb_demo:"डेमो",
 lb_up:"🚀 {name} से आगे निकलने के लिए बस {n} पॉइंट्स और!",lb_top:"🏆 आप लीडरबोर्ड पर #1 हैं! ऐसे ही जारी रखें!",lb_zero:"लीडरबोर्ड पर चढ़ना शुरू करने के लिए अपना पहला OTP-वेरिफ़ाइड पिकअप पूरा करें।",
 pf_phone:"फ़ोन",pf_scanned:"स्कैन की गई वस्तुएँ",pf_rec:"रिकवर की गई वस्तुएँ",pf_pts:"रिवॉर्ड पॉइंट्स",pf_co2:"CO₂ बचाई (किग्रा)",pf_lvl:"लेवल",pf_next:"{lvl} तक पहुँचने के लिए {n} पॉइंट्स और",pf_max:"सबसे ऊँचे लेवल पर पहुँच गए!",pf_rank:"लीडरबोर्ड रैंक",pf_tree:"≈ {n} पेड़ों के सालाना CO₂ अवशोषण के बराबर (अनुमान)",
@@ -272,7 +272,7 @@ w2t:"रिकवरी मैपिंग",w2d:"कचरे को उपय�
 w3t:"संग्रह और रिकवरी",w3d:"जुड़े हुए रिकवरी सिस्टम के ज़रिए कचरा संग्रह, रीसाइक्लिंग, पुन: उपयोग या अपसाइकल के लिए भेजा जाता है।",
 w4t:"रिवॉर्ड और ट्रैकिंग",w4d:"यूज़र को भागीदारी के लिए प्रोत्साहन मिलता है और रिकवरी व पर्यावरणीय प्रभाव ट्रैक होता है।",
 sc_title:"AI कचरा <span>स्कैनर</span>",sc_model:"मॉडल स्थिति:",
-m_load:"लोड हो रहा है...",m_custom:"कचरा डेटासेट पर प्रशिक्षित कस्टम मॉडल",m_demo:"डेमो मोड (सामान्य मॉडल, मूर्तियाँ भरोसेमंद ढंग से नहीं पहचानता) - प्रशिक्षित model/ फ़ोल्डर नहीं मिला",m_fail:"मॉडल लोड नहीं हो सका",m_nolib:"AI लाइब्रेरी लोड नहीं हुईं - इंटरनेट जाँचें और रीलोड करें",
+m_load:"लोड हो रहा है...",m_custom:"कचरा डेटासेट पर प्रशिक्षित कस्टम मॉडल",m_demo:"डेमो मोड (सामान्य मॉडल, मूर्तियाँ भरोसेमंद ढंग से नहीं पहचानता) - प्रशिक्षित model/ फ़ोल्डर नहीं मिला",m_fail:"मॉडल लोड नहीं हो सका (इंटरनेट जाँचें) - दोबारा कोशिश के लिए यहाँ टैप करें",m_nolib:"AI लाइब्रेरी लोड नहीं हुईं - इंटरनेट जाँचें और रीलोड करें",
 d_text:"यहाँ इमेज डालें या अपलोड करने के लिए क्लिक करें",d_sub:"किसी एक कचरे की JPG / PNG फ़ोटो सबसे अच्छी रहती है",
 b_up:"इमेज अपलोड करें",b_cam:"कैमरा इस्तेमाल करें",b_cap:"फ़ोटो लें",b_go:"कचरा एनालाइज़ करें",
 r_hint:"वस्तु स्कैन करने के बाद आपकी AI रिपोर्ट यहाँ दिखेगी।",r_busy:"कचरे का विश्लेषण हो रहा है...",r_err:"विश्लेषण नहीं हो सका: ",
@@ -420,7 +420,7 @@ function renderResult(){
  $("res").innerHTML=`
  <div class="blk" style="border:0;margin:0;padding:0"><h5>${t("r1")}</h5>
   <h3>${X.n} <span class="pill ${I.rec?"rec":"nrec"}">${t(I.rec?"r_recov":"r_resid")}</span></h3>
-  <small>${t("r_conf")} ${cur.conf}%</small><div class="bar"><div style="width:${cur.conf}%"></div></div>
+  ${cur.manual?`<small style="color:#ffb84d">✋ ${t("man_tag")}</small>`:`<small>${t("r_conf")} ${cur.conf}%</small><div class="bar"><div style="width:${cur.conf}%"></div></div>`}
   ${cur.others.map(o=>`<small>${C[o.k][lang].n}: ${o.p}%</small>`).join("<br>")}
   <div class="kv" style="margin-top:8px"><span>${t("r_route")}</span><div>${X.path}</div></div></div>
  <div class="blk"><h5>${t("r2")}</h5>
@@ -528,21 +528,34 @@ $("loc").onclick=()=>{
 };
 
 /* ================= MODEL ================= */
-function setMode(k){modeKey=k;$("mode").textContent=t(k)}
+function setMode(k){modeKey=k;$("mode").textContent=t(k);$("mode").style.cursor=k==="m_fail"?"pointer":"default"}
+const withTO=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout after "+ms/1000+"s")),ms))]);
 async function init(){
  if(typeof tf==="undefined"){setMode("m_nolib");return}
+ mode="none";setMode("m_load");$("mode").className="badge";
  try{
-  labels=await (await fetch("model/labels.json")).json();
-  model=await tf.loadLayersModel("model/model.json");
+  const lr=await withTO(fetch("model/labels.json",{cache:"no-store"}),8000);
+  if(!lr.ok)throw new Error("labels.json not found");
+  labels=await lr.json();
+  model=await withTO(tf.loadLayersModel("model/model.json"),40000);
   mode="custom";setMode("m_custom");$("mode").className="badge live";
  }catch(e){
   console.warn("Custom model not loaded:",e);
-  try{if(typeof mobilenet==="undefined")throw new Error("mobilenet lib missing");
-   mob=await mobilenet.load({version:2,alpha:1.0});mode="demo";setMode("m_demo");
-  }catch(e2){console.error(e2);setMode("m_fail")}
+  try{
+   if(typeof mobilenet==="undefined")throw new Error("mobilenet lib missing");
+   const urls=[null,"https://storage.googleapis.com/tfjs-models/savedmodel/mobilenet_v2_1.0_224/model.json"];
+   let last=null;mob=null;
+   for(const u of urls){
+    try{mob=await withTO(mobilenet.load(u?{version:2,alpha:1.0,modelUrl:u}:{version:2,alpha:1.0}),20000);break}
+    catch(x){last=x;console.warn("mobilenet source failed:",u||"default",x)}
+   }
+   if(!mob)throw last||new Error("mobilenet failed");
+   mode="demo";setMode("m_demo");
+  }catch(e2){console.error(e2);mode="none";setMode("m_fail")}
  }
  if(curEl&&mode!=="none")$("go").disabled=false;
 }
+$("mode").onclick=()=>{if(mode==="none"&&modeKey==="m_fail")init()};
 const KW={
  "Plastic":["water bottle","pop bottle","plastic bag","bottle","jug","container","bucket","lotion","sunscreen","soap dispenser","pill bottle","shaker","toy"],
  "Glass":["beer bottle","wine bottle","goblet","vase","beer glass","wine","red wine","perfume","jar","lens"],
@@ -596,7 +609,11 @@ $("go").onclick=async()=>{
   const key=l=>{const n=String(l).replace(/^\d+[-_ ]*/,"").replace(/_/g," ").trim().toLowerCase();return KEYS.find(k=>k.toLowerCase()===n)||"Miscellaneous Trash"};
   cur={cls:key(top[0].label),conf:Math.round(top[0].p*100),others:top.slice(1).map(x=>({k:key(x.label),p:Math.round(x.p*100)})),done:null,addr:S.addr||"",err:false};
   renderResult();
- }catch(e){clearInterval(iv);cur=null;$("res").innerHTML=`<div class="sub">${t("r_err")}${e.message||e}</div>`}
+ }catch(e){clearInterval(iv);cur=null;console.error(e);
+  $("res").innerHTML=`<div class="sub">${t("r_err")}${e.message||e}</div><div class="blk"><small style="color:var(--mut)">${t("man_hint")}</small><div class="mk" style="margin-top:8px">${KEYS.map(k=>`<button class="chip mpick" data-k="${k}">${C[k][lang].n}</button>`).join("")}</div><div class="row"><button class="btn o s" id="retryM">${t("man_retry")}</button></div></div>`;
+  document.querySelectorAll(".mpick").forEach(b=>b.onclick=()=>{cur={cls:b.dataset.k,conf:100,others:[],done:null,addr:S.addr||"",err:false,manual:true};renderResult()});
+  $("retryM").onclick=()=>{$("res").innerHTML=`<div class="sub">${t("m_load")}</div>`;init().then(()=>{if(mode!=="none")$("go").click()})};
+ }
 };
 gate();applyLang();init();
 </script>
